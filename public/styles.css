@@ -388,25 +388,31 @@ button:disabled {
   color: var(--danger);
 }
 
-.legal-footer {
-  margin-top: 40px;
-  padding: 24px;
+.legal-links {
+  margin-top: auto;
+  padding-top: 16px;
   display: flex;
   justify-content: center;
-  gap: 24px;
+  align-items: center;
+  gap: 12px;
   border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 700;
 }
 
-.legal-footer a {
+.legal-links a {
   color: var(--muted);
   text-decoration: none;
-  font-size: 0.82rem;
-  font-weight: 700;
   transition: color 0.16s ease;
 }
 
-.legal-footer a:hover {
+.legal-links a:hover {
   color: var(--primary);
+}
+
+.legal-links span {
+  opacity: 0.5;
 }
 
 @media (max-width: 860px) {
@@ -414,7 +420,9 @@ button:disabled {
     grid-template-columns: 1fr;
     width: min(100% - 24px, 720px);
     margin: 12px auto;
+    min-height: auto;
   }
+
 
   .composer {
     padding: 20px;
