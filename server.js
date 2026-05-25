@@ -92,6 +92,8 @@ async function handleSend(req, payload) {
   const recipients = parseRecipients(payload.recipients);
   const subject = String(payload.subject || "").trim();
   const content = String(payload.content || "").trim();
+  const signature = String(payload.signature || "").trim();
+  const attachment = payload.attachment; // { name, type, data }
   const contentType = payload.format === "html" ? "html" : "plain";
 
   if (!recipients.length) {
@@ -125,7 +127,9 @@ async function handleSend(req, payload) {
         to: [recipient],
         subject,
         content,
-        contentType
+        contentType,
+        signature,
+        attachment
       });
 
       await sendGmailApiMessage(accessToken, message);
@@ -225,6 +229,7 @@ async function refreshAccessToken(session) {
   }
 
   const body = new URLSearchParams({
+    code,
     client_id: process.env.GOOGLE_CLIENT_ID,
     client_secret: process.env.GOOGLE_CLIENT_SECRET,
     refresh_token: session.refreshToken,
@@ -324,20 +329,43 @@ function isEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-function createMessage({ from, to, subject, content, contentType }) {
+function createMessage({ from, to, subject, content, contentType, signature, attachment }) {
+  const boundary = `----=_Part_${Date.now()}_${crypto.randomBytes(8).toString("hex")}`;
   const messageId = `${Date.now()}.${crypto.randomBytes(8).toString("hex")}@email-send-app`;
+
+  // Combine content and signature
+  const fullContent = signature ? `${content}\r\n\r\n--\r\n${signature}` : content;
+
   const headers = [
     `From: ${formatAddress(from)}`,
     `To: ${to.join(", ")}`,
     `Subject: ${encodeHeader(subject)}`,
     `Message-ID: <${messageId}>`,
     `Date: ${new Date().toUTCString()}`,
-    "MIME-Version: 1.0",
-    `Content-Type: text/${contentType}; charset=utf-8`,
-    "Content-Transfer-Encoding: 8bit"
+    "MIME-Version: 1.0"
   ];
 
-  return `${headers.join("\r\n")}\r\n\r\n${content}\r\n`;
+  if (!attachment) {
+    headers.push(`Content-Type: text/${contentType}; charset=utf-8`);
+    headers.push("Content-Transfer-Encoding: 8bit");
+    return `${headers.join("\r\n")}\r\n\r\n${fullContent}\r\n`;
+  }
+
+  headers.push(`Content-Type: multipart/mixed; boundary="${boundary}"`);
+
+  let body = `--${boundary}\r\n`;
+  body += `Content-Type: text/${contentType}; charset=utf-8\r\n`;
+  body += "Content-Transfer-Encoding: 8bit\r\n\r\n";
+  body += `${fullContent}\r\n\r\n`;
+
+  body += `--${boundary}\r\n`;
+  body += `Content-Type: ${attachment.type || "application/octet-stream"}; name="${encodeHeader(attachment.name)}"\r\n`;
+  body += `Content-Disposition: attachment; filename="${encodeHeader(attachment.name)}"\r\n`;
+  body += "Content-Transfer-Encoding: base64\r\n\r\n";
+  body += `${attachment.data}\r\n\r\n`;
+  body += `--${boundary}--`;
+
+  return `${headers.join("\r\n")}\r\n\r\n${body}`;
 }
 
 function formatAddress(address) {

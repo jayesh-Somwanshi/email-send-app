@@ -58,7 +58,25 @@ form.addEventListener("submit", async (event) => {
   showMessage("", "");
   setStatus("Sending");
 
-  const data = Object.fromEntries(new FormData(form).entries());
+  const formData = new FormData(form);
+  const data = Object.fromEntries(formData.entries());
+
+  // Handle attachment
+  const fileInput = document.querySelector("#attachment");
+  if (fileInput.files.length > 0) {
+    const file = fileInput.files[0];
+    try {
+      data.attachment = {
+        name: file.name,
+        type: file.type,
+        data: await toBase64(file)
+      };
+    } catch (error) {
+      showMessage("Error reading attachment file.", "error");
+      setLoading(false);
+      return;
+    }
+  }
 
   try {
     const response = await fetch("/api/send", {
@@ -150,6 +168,19 @@ function setSession(session) {
   logoutButton.hidden = !loggedIn;
   sendButton.disabled = !loggedIn;
   setStatus(loggedIn ? "Ready" : "Login needed");
+}
+
+function toBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      // Remove prefix "data:*/*;base64,"
+      const base64String = reader.result.split(",")[1];
+      resolve(base64String);
+    };
+    reader.onerror = (error) => reject(error);
+  });
 }
 
 updateRecipientCount();
