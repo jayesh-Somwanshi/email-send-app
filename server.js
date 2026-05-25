@@ -113,20 +113,39 @@ async function handleSend(req, payload) {
 
   const senderName = String(payload.senderName || "").trim();
   const from = senderName ? `${senderName} <${session.email}>` : session.email;
-  const message = createMessage({
-    from,
-    to: recipients,
-    subject,
-    content,
-    contentType
-  });
+  const accessToken = await ensureAccessToken(session);
 
-  await sendGmailApiMessage(await ensureAccessToken(session), message);
+  let successCount = 0;
+  let lastError = null;
+
+  for (const recipient of recipients) {
+    try {
+      const message = createMessage({
+        from,
+        to: [recipient],
+        subject,
+        content,
+        contentType
+      });
+
+      await sendGmailApiMessage(accessToken, message);
+      successCount++;
+    } catch (error) {
+      lastError = error;
+      console.error(`Failed to send to ${recipient}:`, error);
+    }
+  }
+
+  if (successCount === 0 && lastError) {
+    throw lastError;
+  }
 
   return {
     ok: true,
-    message: `Email sent to ${recipients.length} recipient${recipients.length === 1 ? "" : "s"}.`,
-    count: recipients.length
+    message: `Email sent separately to ${successCount} recipient${successCount === 1 ? "" : "s"}${
+      recipients.length > successCount ? ` (${recipients.length - successCount} failed)` : ""
+    }.`,
+    count: successCount
   };
 }
 
