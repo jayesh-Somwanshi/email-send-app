@@ -1,0 +1,17 @@
+{
+  "name": "email-send-application",
+  "version": "1.0.0",
+  "description": "A small web app for sending one email to multiple recipients through SMTP.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "email",
+    "smtp",
+    "bulk-email"
+  ],
+  "author": "",
+  "license": "MIT"
+}

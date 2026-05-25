@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- <title>Email Send Application</title> -->
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="composer">
+        <div class="topbar">
+          <div>
+            <p class="eyebrow">SMTP Mailer</p>
+            <!-- <h1>Email Send Application</h1> -->
+          </div>
+          <div class="status-pill" id="statusPill">Ready</div>
+        </div>
+
+        <div class="auth-panel">
+          <div>
+            <span class="auth-label">Google Account</span>
+            <strong id="accountEmail">Not logged in</strong>
+          </div>
+          <div class="auth-actions">
+            <a class="google-button" id="loginButton" href="/auth/google">Login with Google</a>
+            <button type="button" id="logoutButton" class="secondary" hidden>Logout</button>
+          </div>
+        </div>
+
+        <form id="emailForm" class="email-form">
+          <label>
+            <span>Sender Name</span>
+            <input id="senderName" name="senderName" type="text" placeholder="Your name" />
+          </label>
+
+          <label>
+            <span>Recipients</span>
+            <textarea
+              id="recipients"
+              name="recipients"
+              rows="5"
+              placeholder="person1@example.com, person2@example.com"
+              required
+            ></textarea>
+          </label>
+
+          <label>
+            <span>Subject</span>
+            <input id="subject" name="subject" type="text" placeholder="Your email subject" required />
+          </label>
+
+          <div class="format-row">
+            <span>Content Type</span>
+            <div class="segmented" role="radiogroup" aria-label="Email format">
+              <label>
+                <input type="radio" name="format" value="text" checked />
+                <span>Text</span>
+              </label>
+              <label>
+                <input type="radio" name="format" value="html" />
+                <span>HTML</span>
+              </label>
+            </div>
+          </div>
+
+          <label>
+            <span>Email Content</span>
+            <textarea
+              id="content"
+              name="content"
+              rows="12"
+              placeholder="Write your email content here..."
+              required
+            ></textarea>
+          </label>
+
+          <div class="actions">
+            <button type="button" id="clearButton" class="secondary">Clear</button>
+            <button type="submit" id="sendButton">Send Email</button>
+          </div>
+        </form>
+      </section>
+
+      <aside class="side-panel">
+        <div class="metric">
+          <span id="recipientCount">0</span>
+          <p>Recipients detected</p>
+        </div>
+        <div class="setup-panel">
+          <span class="setup-title">Google OAuth Setup</span>
+          <p>OAuth Client ID in use</p>
+          <code id="oauthClientId">Loading...</code>
+          <p>Authorized JavaScript origin</p>
+          <code id="oauthOrigin">Loading...</code>
+          <p>Authorized redirect URI</p>
+          <code id="oauthRedirect">Loading...</code>
+          <p>Also safe to add</p>
+          <code id="oauthLocalhostRedirect">Loading...</code>
+          <button type="button" id="copyRedirectButton" class="secondary">Copy Redirect URI</button>
+          <div id="oauthStatus" class="oauth-status">Checking config...</div>
+        </div>
+        <div class="hint-list">
+          <p>Use commas, spaces, or new lines between emails.</p>
+          <p>Login with Google before sending.</p>
+          <p>The email is sent from the logged-in Gmail account.</p>
+        </div>
+        <div id="messageBox" class="message-box" hidden></div>
+      </aside>
+    </main>
+
+    <script src="/script.js"></script>
+  </body>
+</html>
