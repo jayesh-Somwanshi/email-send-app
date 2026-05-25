@@ -258,8 +258,8 @@ function getOAuthConfigView() {
     ok: true,
     appOrigin: APP_ORIGIN,
     redirectUri: getRedirectUri(),
-    localhostRedirectUri: "http://localhost:3000/auth/google/callback",
-    loopbackRedirectUri: "http://127.0.0.1:3000/auth/google/callback",
+    localhostRedirectUri: "https://email-send-app-two.vercel.app/auth/google/callback",
+    loopbackRedirectUri: "https://email-send-app-two.vercel.app/auth/google/callback",
     googleClientId: maskClientId(clientId),
     googleClientConfigured: Boolean(process.env.GOOGLE_CLIENT_ID),
     googleSecretConfigured: Boolean(process.env.GOOGLE_CLIENT_SECRET)
