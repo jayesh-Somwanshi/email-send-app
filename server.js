@@ -333,8 +333,8 @@ function createMessage({ from, to, subject, content, contentType, signature, att
   const boundary = `----=_Part_${Date.now()}_${crypto.randomBytes(8).toString("hex")}`;
   const messageId = `${Date.now()}.${crypto.randomBytes(8).toString("hex")}@email-send-app`;
 
-  // Combine content and signature
-  const fullContent = signature ? `${content}\r\n\r\n--\r\n${signature}` : content;
+  // Combine content and signature (remove the -- separator)
+  const fullContent = signature ? `${content}\r\n\r\n${signature}` : content;
 
   const headers = [
     `From: ${formatAddress(from)}`,
@@ -359,8 +359,8 @@ function createMessage({ from, to, subject, content, contentType, signature, att
   body += `${fullContent}\r\n\r\n`;
 
   body += `--${boundary}\r\n`;
-  body += `Content-Type: ${attachment.type || "application/octet-stream"}; name="${encodeHeader(attachment.name)}"\r\n`;
-  body += `Content-Disposition: attachment; filename="${encodeHeader(attachment.name)}"\r\n`;
+  body += `Content-Type: ${attachment.type || "application/octet-stream"}; name="${attachment.name}"\r\n`;
+  body += `Content-Disposition: attachment; filename="${attachment.name}"\r\n`;
   body += "Content-Transfer-Encoding: base64\r\n\r\n";
   body += `${attachment.data}\r\n\r\n`;
   body += `--${boundary}--`;
