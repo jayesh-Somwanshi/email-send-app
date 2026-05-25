@@ -92,7 +92,7 @@ async function handleSend(req, payload) {
   const recipients = parseRecipients(payload.recipients);
   const subject = String(payload.subject || "").trim();
   const content = String(payload.content || "").trim();
-  const contentType = payload.format === "html" ? "html" : "text";
+  const contentType = payload.format === "html" ? "html" : "plain";
 
   if (!recipients.length) {
     throw publicError(400, "Please enter at least one valid email address.");
