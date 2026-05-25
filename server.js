@@ -7,9 +7,18 @@ const crypto = require("crypto");
 loadEnv(path.join(__dirname, ".env"));
 
 const PORT = Number(process.env.PORT || 3000);
-const HOST = process.env.HOST || "127.0.0.1";
+const HOST = process.env.HOST || "0.0.0.0";
 const PUBLIC_DIR = path.join(__dirname, "public");
-const APP_ORIGIN = process.env.APP_ORIGIN || `http://${HOST}:${PORT}`;
+
+// Dynamic APP_ORIGIN detection for Vercel
+let APP_ORIGIN = process.env.APP_ORIGIN;
+if (!APP_ORIGIN && process.env.VERCEL_URL) {
+  APP_ORIGIN = `https://${process.env.VERCEL_URL}`;
+}
+if (!APP_ORIGIN) {
+  APP_ORIGIN = `http://${HOST === "0.0.0.0" ? "localhost" : HOST}:${PORT}`;
+}
+
 const GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
 const GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token";
 const GMAIL_SEND_URL = "https://gmail.googleapis.com/gmail/v1/users/me/messages/send";
@@ -278,7 +287,10 @@ function assertGoogleConfig() {
 }
 
 function getRedirectUri() {
-  return process.env.GOOGLE_REDIRECT_URI || `${APP_ORIGIN}/auth/google/callback`;
+  if (process.env.GOOGLE_REDIRECT_URI) {
+    return process.env.GOOGLE_REDIRECT_URI;
+  }
+  return `${APP_ORIGIN}/auth/google/callback`;
 }
 
 function parseRecipients(input) {
