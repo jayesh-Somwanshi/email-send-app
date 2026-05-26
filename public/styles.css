@@ -455,6 +455,10 @@ textarea#recipients {
   opacity: 0.9;
 }
 
+@media (max-width: 480px) {
+  .profile-trigger .profile-info { display: none; }
+}
+
 .avatar {
   width: 40px;
   height: 40px;
@@ -640,7 +644,7 @@ textarea#recipients {
   background: white;
   border: 1px solid var(--border);
   border-radius: 10px;
-  padding: 8px;
+  padding: 10px;
   cursor: pointer;
   color: var(--text);
   box-shadow: 0 4px 10px rgba(0,0,0,0.05);
@@ -703,12 +707,17 @@ textarea#recipients {
   }
 
   .dashboard-banner {
-    padding: 24px 20px;
+    padding: 32px 24px;
     border-radius: 20px;
+    text-align: center;
+    align-items: center;
   }
 
-  .dashboard-banner h1 { font-size: 1.75rem !important; }
-  .dashboard-banner p { font-size: 0.9rem !important; }
+  .dashboard-banner h1 { font-size: 1.75rem !important; margin-bottom: 8px !important; }
+  .dashboard-banner p { font-size: 0.95rem !important; line-height: 1.5; }
+
+  .blob-1 { width: 200px; height: 200px; top: -50px; right: -50px; }
+  .blob-2 { width: 150px; height: 150px; bottom: -30px; left: -20px; }
 
   .dashboard-grid {
     grid-template-columns: 1fr;
@@ -750,6 +759,8 @@ textarea#recipients {
 
 @media (max-width: 480px) {
   .dashboard-banner h1 { font-size: 1.5rem !important; }
+  .stat-value { font-size: 1.75rem !important; }
   .status-pill { display: none; }
-  .profile-trigger span { display: none; } /* Hide email in header on very small screens */
+  .profile-trigger .profile-info { display: none; }
+  canvas { min-height: 200px; }
 }

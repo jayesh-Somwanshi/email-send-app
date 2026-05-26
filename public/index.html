@@ -110,7 +110,7 @@
             <div class="profile-container">
               <div class="profile-trigger" id="profileTrigger">
                 <div class="avatar" id="userAvatar"></div>
-                <div style="display: flex; flex-direction: column; gap: 1px;">
+                <div class="profile-info" style="display: flex; flex-direction: column; gap: 1px;">
                   <p style="margin: 0; font-weight: 700; font-size: 0.9rem;" id="accountEmail">Not logged in</p>
                   <p style="margin: 0; font-size: 0.75rem; color: var(--text-muted);" id="accountSubtext">Admin Account</p>
                   <div id="statusIndicator" style="display: flex; align-items: center; gap: 6px; font-size: 0.7rem; margin-top: 2px; color: var(--success); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">
@@ -228,21 +228,23 @@
                 Recent Tracked Emails
                 <button class="btn btn-secondary" style="font-size: 0.75rem; padding: 4px 10px;" onclick="switchView('history')">View All</button>
               </div>
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th>Subject</th>
-                    <th>Recipient</th>
-                    <th>Status</th>
-                    <th>Date</th>
-                  </tr>
-                </thead>
-                <tbody id="historyTableBody">
-                  <tr>
-                    <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 40px;">No emails sent yet.</td>
-                  </tr>
-                </tbody>
-              </table>
+              <div style="overflow-x: auto; margin: 0 -20px; padding: 0 20px;">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Subject</th>
+                      <th>Recipient</th>
+                      <th>Status</th>
+                      <th>Date</th>
+                    </tr>
+                  </thead>
+                  <tbody id="historyTableBody">
+                    <tr>
+                      <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 40px;">No emails sent yet.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
 
