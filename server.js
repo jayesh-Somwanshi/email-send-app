@@ -362,9 +362,6 @@ function createMessage({ from, to, subject, content, contentType, signature, att
   <div style="border-top: 1px solid #e8eaed; padding-top: 24px; margin-top: 24px; color: #5f6368; font-size: 14px;">
     ${escapedSignature}
   </div>` : ""}
-  <div style="margin-top: 40px; padding-top: 20px; border-top: 1px dotted #dadce0; font-size: 11px; color: #9aa0a6; text-align: center;">
-    Sent via Email Send Application
-  </div>
 </div>
     `.trim();
     contentType = "html";
