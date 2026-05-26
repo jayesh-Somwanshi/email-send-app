@@ -16,6 +16,13 @@ const statusPill = document.getElementById("statusPill");
 const messageBox = document.getElementById("messageBox");
 const accountEmail = document.getElementById("accountEmail");
 
+// Profile Dropdown Elements
+const profileTrigger = document.getElementById("profileTrigger");
+const profileDropdown = document.getElementById("profileDropdown");
+const dropdownEmail = document.getElementById("dropdownEmail");
+const dropdownLogin = document.getElementById("dropdownLogin");
+const dropdownLogout = document.getElementById("dropdownLogout");
+
 // View Switching Logic
 const navLinks = document.querySelectorAll(".nav-link[data-view]");
 const views = document.querySelectorAll(".view");
@@ -41,6 +48,22 @@ navLinks.forEach(link => {
 
 window.switchView = switchView;
 
+// Dropdown Toggle Logic
+if (profileTrigger && profileDropdown) {
+  profileTrigger.addEventListener("click", (e) => {
+    e.stopPropagation();
+    profileDropdown.classList.toggle("active");
+  });
+
+  document.addEventListener("click", () => {
+    profileDropdown.classList.remove("active");
+  });
+
+  profileDropdown.addEventListener("click", (e) => {
+    e.stopPropagation();
+  });
+}
+
 // Event Listeners
 if (recipientsInput) recipientsInput.addEventListener("input", updateRecipientCount);
 
@@ -54,37 +77,16 @@ if (clearButton) {
 }
 
 if (logoutButton) {
-  logoutButton.addEventListener("click", async () => {
-    await fetch("/api/logout", { method: "POST" });
-    window.location.reload(); 
-  });
-}
-
-// Profile Dropdown Logic
-const profileTrigger = document.getElementById("profileTrigger");
-const profileDropdown = document.getElementById("profileDropdown");
-const dropdownLogin = document.getElementById("dropdownLogin");
-const dropdownLogout = document.getElementById("dropdownLogout");
-const dropdownEmail = document.getElementById("dropdownEmail");
-
-if (profileTrigger && profileDropdown) {
-  profileTrigger.addEventListener("click", (e) => {
-    e.stopPropagation();
-    profileDropdown.classList.toggle("active");
-  });
-
-  document.addEventListener("click", () => {
-    profileDropdown.classList.remove("active");
-  });
-
-  profileDropdown.addEventListener("click", (e) => e.stopPropagation());
+  logoutButton.addEventListener("click", logout);
 }
 
 if (dropdownLogout) {
-  dropdownLogout.addEventListener("click", async () => {
-    await fetch("/api/logout", { method: "POST" });
-    window.location.reload();
-  });
+  dropdownLogout.addEventListener("click", logout);
+}
+
+async function logout() {
+  await fetch("/api/logout", { method: "POST" });
+  window.location.reload(); 
 }
 
 if (form) {
@@ -148,12 +150,16 @@ async function loadSession() {
     const session = await response.json();
     loggedIn = Boolean(session.loggedIn);
     
-    if (accountEmail) accountEmail.textContent = loggedIn ? session.email : "Not logged in";
-    if (dropdownEmail) dropdownEmail.textContent = loggedIn ? session.email : "Not logged in";
+    const emailStr = loggedIn ? session.email : "Not logged in";
+    if (accountEmail) accountEmail.textContent = emailStr;
+    if (dropdownEmail) dropdownEmail.textContent = emailStr;
+    
+    // Toggle Visibility
     if (loginButton) loginButton.style.display = loggedIn ? 'none' : 'flex';
     if (logoutButton) logoutButton.hidden = !loggedIn;
-    if (dropdownLogin) dropdownLogin.hidden = loggedIn;
-    if (dropdownLogout) dropdownLogout.hidden = !loggedIn;
+    if (dropdownLogin) dropdownLogin.style.display = loggedIn ? 'none' : 'block';
+    if (dropdownLogout) dropdownLogout.style.display = loggedIn ? 'block' : 'none';
+    
     if (sendButton) sendButton.disabled = !loggedIn;
 
     if (loggedIn) {

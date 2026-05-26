@@ -54,9 +54,9 @@
           </div>
           <div class="header-actions">
             <div class="status-pill">Ready</div>
-            <div class="profile-dropdown-container">
+            <div class="profile-container">
               <div class="profile-trigger" id="profileTrigger">
-                <div class="avatar"></div>
+                <div class="avatar" id="userAvatar"></div>
                 <div style="font-size: 0.875rem;">
                   <p style="margin: 0; font-weight: 600;" id="accountEmail">Not logged in</p>
                   <p style="margin: 0; font-size: 0.75rem; color: var(--text-muted);">Admin Account</p>
@@ -68,12 +68,8 @@
                   <span>Admin Account</span>
                 </div>
                 <div class="dropdown-divider"></div>
-                <a href="/auth/google" class="dropdown-item" id="dropdownLogin">
-                  <span>🔑 Login with Google</span>
-                </a>
-                <button type="button" class="dropdown-item" id="dropdownLogout" hidden>
-                  <span>🚪 Logout</span>
-                </button>
+                <a href="/auth/google" id="dropdownLogin" class="dropdown-item">🔑 Login with Google</a>
+                <button id="dropdownLogout" class="dropdown-item" style="display:none; width:100%; text-align:left; border:none; background:none; cursor:pointer;">🚪 Logout</button>
               </div>
             </div>
           </div>
