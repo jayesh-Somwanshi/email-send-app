@@ -86,7 +86,7 @@ if (dropdownLogout) {
 
 async function logout() {
   await fetch("/api/logout", { method: "POST" });
-  window.location.reload(); 
+  window.location.reload();
 }
 
 if (form) {
@@ -149,10 +149,10 @@ async function loadSession() {
     const response = await fetch("/api/session");
     const session = await response.json();
     loggedIn = Boolean(session.loggedIn);
-    
+
     const emailStr = loggedIn ? session.email : "Not logged in";
     const nameStr = loggedIn ? (session.name || session.email) : "Not logged in";
-    
+
     if (accountEmail) {
       accountEmail.textContent = nameStr;
       // If we have a name, show the email as muted text below it
@@ -163,7 +163,7 @@ async function loadSession() {
         subText.textContent = "Admin Account";
       }
     }
-    
+
     if (dropdownEmail) {
       dropdownEmail.textContent = nameStr;
       const subText = dropdownEmail.nextElementSibling;
@@ -185,13 +185,13 @@ async function loadSession() {
         userAvatar.style.backgroundColor = "#e2e8f0";
       }
     }
-    
+
     // Toggle Visibility
     if (loginButton) loginButton.style.display = loggedIn ? 'none' : 'flex';
     if (logoutButton) logoutButton.hidden = !loggedIn;
     if (dropdownLogin) dropdownLogin.style.display = loggedIn ? 'none' : 'block';
     if (dropdownLogout) dropdownLogout.style.display = loggedIn ? 'block' : 'none';
-    
+
     if (sendButton) sendButton.disabled = !loggedIn;
 
     if (loggedIn) {
