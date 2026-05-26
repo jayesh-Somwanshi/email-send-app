@@ -105,8 +105,9 @@
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
             </button>
             <div class="header-search">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted);"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
-            <input type="text" placeholder="Search emails, contacts..." />
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted);"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+              <input type="text" placeholder="Search emails, contacts..." />
+            </div>
           </div>
           <div class="header-actions">
             <div class="profile-container">
@@ -263,8 +264,8 @@
               <div class="section-card">
                 <div class="section-title">Developer Profile</div>
                 <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 24px;">
-                  <div style="width: 80px; height: 80px; border-radius: 20px; overflow: hidden; border: 3px solid white; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">
-                    <img src="/developer-photo.jpg" alt="Jayesh Somwanshi" style="width:100%; height:100%; object-fit:cover;">
+                  <div class="developer-photo-container" style="width: 80px; height: 80px; border-radius: 20px; overflow: hidden; border: 3px solid white; box-shadow: 0 10px 20px rgba(0,0,0,0.1); cursor: pointer; transition: transform 0.3s ease;">
+                    <img src="/developer-photo.jpg" alt="Jayesh Somwanshi" id="developerPhoto" style="width:100%; height:100%; object-fit:cover; object-position: center 15%;">
                   </div>
                   <div>
                     <h2 id="developerName" style="margin: 0; font-size: 1.5rem; color: var(--text);">Jayesh Somwanshi</h2>
@@ -374,6 +375,15 @@
         </div>
       </main>
     </div>
+
+    <!-- Image Modal (Lightbox) -->
+    <div id="imageModal" class="image-modal">
+      <div class="image-modal-content">
+        <img id="modalImg" src="/developer-photo.jpg" alt="Full Profile Photo">
+      </div>
+      <button class="image-modal-close">&times;</button>
+    </div>
+
     <script src="/script.js"></script>
   </body>
 </html>

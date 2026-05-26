@@ -400,3 +400,26 @@ loadSession().then(() => {
   loadStats();
 });
 updateRecipientCount();
+
+// Image Modal Logic
+const imageModal = document.getElementById("imageModal");
+const developerPhoto = document.getElementById("developerPhoto");
+const modalClose = document.querySelector(".image-modal-close");
+
+if (developerPhoto && imageModal) {
+  developerPhoto.parentElement.addEventListener("click", () => {
+    imageModal.classList.add("active");
+  });
+
+  if (modalClose) {
+    modalClose.addEventListener("click", () => {
+      imageModal.classList.remove("active");
+    });
+  }
+
+  imageModal.addEventListener("click", (e) => {
+    if (e.target === imageModal) {
+      imageModal.classList.remove("active");
+    }
+  });
+}
