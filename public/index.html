@@ -127,8 +127,10 @@
           <!-- Dashboard View -->
           <div id="dashboardView" class="view active">
             <div class="dashboard-banner">
-              <h1 style="font-size: 2.25rem; font-weight: 800; margin-bottom: 8px; letter-spacing: -1px;">Dashboard</h1>
-              <p style="font-size: 1.1rem; opacity: 0.9; font-weight: 500;">Ready to reach your audience? Here's your campaign summary.</p>
+              <div class="blob blob-1"></div>
+              <div class="blob blob-2"></div>
+              <h1 style="font-size: 2.75rem; font-weight: 800; margin-bottom: 12px; letter-spacing: -1.5px;">Dashboard</h1>
+              <p style="font-size: 1.2rem; opacity: 0.9; font-weight: 500; max-width: 600px;">Track your campaign performance and reach your audience with premium precision.</p>
             </div>
 
             <div class="dashboard-grid">
@@ -181,76 +183,41 @@
               </div>
             </div>
 
-            <div class="sections-grid">
+            <div class="dashboard-sections">
               <div class="section-card">
-                <div class="section-title">Email Activity Overview</div>
-                <div style="height: 240px; position: relative;">
+                <div class="section-title">
+                  <span>Campaign Performance</span>
+                  <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500;">Last 7 Days</div>
+                </div>
+                <div style="height: 300px; position: relative;">
                   <canvas id="activityChart"></canvas>
                 </div>
               </div>
-              <div class="section-card">
-                <div class="section-title">Quick Actions</div>
-                <div style="display: grid; gap: 12px;">
-                  <button class="btn btn-secondary btn-block" style="justify-content: flex-start;" onclick="switchView('compose')">✉️ Compose New Email</button>
-                  <button class="btn btn-secondary btn-block" style="justify-content: flex-start;">🕒 View Email History</button>
-                  <button class="btn btn-secondary btn-block" style="justify-content: flex-start;">🎭 Manage Templates</button>
-                  <button class="btn btn-secondary btn-block" style="justify-content: flex-start;">👥 Add Contacts</button>
-                </div>
-              </div>
-            </div>
-
-            <div class="sections-grid" style="margin-top: 24px;">
-              <div class="section-card">
-                <div class="section-title">Email Status</div>
-                <div style="height: 240px; display: flex; align-items: center; justify-content: center; position: relative;">
-                  <canvas id="statusChart"></canvas>
-                  <div style="position: absolute; text-align: center; pointer-events: none;">
-                    <div id="statusTotal" style="font-size: 1.5rem; font-weight: 800;">0</div>
-                    <div style="font-size: 0.7rem; color: var(--text-muted);">Total Sent</div>
-                  </div>
-                </div>
-                <div style="display: flex; justify-content: center; gap: 24px; margin-top: 16px;">
-                  <div style="display: flex; align-items: center; gap: 8px; font-size: 0.75rem;">
-                    <div style="width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></div>
-                    <span>Delivered</span>
-                  </div>
-                  <div style="display: flex; align-items: center; gap: 8px; font-size: 0.75rem;">
-                    <div style="width: 8px; height: 8px; border-radius: 50%; background: #f59e0b;"></div>
-                    <span>Pending</span>
-                  </div>
-                  <div style="display: flex; align-items: center; gap: 8px; font-size: 0.75rem;">
-                    <div style="width: 8px; height: 8px; border-radius: 50%; background: #ef4444;"></div>
-                    <span>Failed</span>
-                  </div>
-                </div>
-              </div>
-              <div class="section-card">
-                <div class="section-title">
-                  OAuth Accounts
-                  <button class="btn btn-secondary" style="font-size: 0.75rem; padding: 4px 10px;">Manage</button>
-                </div>
-                <div id="oauthAccountsList" style="display: grid; gap: 12px;">
-                  <div class="oauth-item active" id="activeOAuthItem" hidden>
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                      <div class="brand-icon" style="width: 32px; height: 32px; background: white; border: 1px solid var(--border);">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" width="16" />
-                      </div>
-                      <div>
-                        <p style="font-size: 0.875rem; font-weight: 600;" id="oauthActiveEmail">email@gmail.com</p>
-                        <p style="font-size: 0.75rem; color: var(--text-muted);">Google Account</p>
-                      </div>
+              <div style="display: flex; flex-direction: column; gap: 24px;">
+                <div class="section-card">
+                  <div class="section-title">Email Distribution</div>
+                  <div style="height: 180px; display: flex; align-items: center; justify-content: center; position: relative;">
+                    <canvas id="statusChart"></canvas>
+                    <div style="position: absolute; text-align: center; pointer-events: none;">
+                      <div id="statusTotal" style="font-size: 1.5rem; font-weight: 800;">0</div>
+                      <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Sent</div>
                     </div>
-                    <span class="status-badge sent" style="font-size: 0.65rem;">Active</span>
                   </div>
-                  <button class="btn btn-secondary btn-block" style="border: 1px dashed var(--border); background: transparent; font-size: 0.8rem; color: var(--text-muted);">+ Add New OAuth Account</button>
+                </div>
+                <div class="section-card">
+                  <div class="section-title">Quick Actions</div>
+                  <div style="display: grid; gap: 10px;">
+                    <button class="btn btn-secondary btn-block" style="justify-content: flex-start; font-size: 0.85rem;" onclick="switchView('compose')">✉️ Compose Campaign</button>
+                    <button class="btn btn-secondary btn-block" style="justify-content: flex-start; font-size: 0.85rem;" onclick="switchView('history')">🕒 Review History</button>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div class="section-card" style="margin-top: 24px;">
+            <div class="section-card" style="margin-top: 32px;">
               <div class="section-title">
-                Recent Emails
-                <a href="#" style="font-size: 0.875rem; color: var(--primary); text-decoration: none;">View all &rarr;</a>
+                Recent Tracked Emails
+                <button class="btn btn-secondary" style="font-size: 0.75rem; padding: 4px 10px;" onclick="switchView('history')">View All</button>
               </div>
               <table class="data-table">
                 <thead>
