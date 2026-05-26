@@ -155,22 +155,25 @@ async function loadSession() {
 
     if (accountEmail) {
       accountEmail.textContent = nameStr;
-      // If we have a name, show the email as muted text below it
       const subText = accountEmail.nextElementSibling;
       if (subText && loggedIn) {
-        subText.textContent = session.email;
+        subText.textContent = (session.name && session.name !== session.email) ? session.email : "";
+        subText.style.display = subText.textContent ? "block" : "none";
       } else if (subText) {
         subText.textContent = "Admin Account";
+        subText.style.display = "block";
       }
     }
-
+    
     if (dropdownEmail) {
       dropdownEmail.textContent = nameStr;
       const subText = dropdownEmail.nextElementSibling;
       if (subText && loggedIn) {
-        subText.textContent = session.email;
+        subText.textContent = (session.name && session.name !== session.email) ? session.email : "";
+        subText.style.display = subText.textContent ? "block" : "none";
       } else if (subText) {
         subText.textContent = "Admin Account";
+        subText.style.display = "block";
       }
     }
 
