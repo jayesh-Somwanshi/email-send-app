@@ -126,53 +126,58 @@
         <div class="view-container">
           <!-- Dashboard View -->
           <div id="dashboardView" class="view active">
-            <h2 style="font-size: 1.5rem; margin-bottom: 8px; font-weight: 800; letter-spacing: -0.5px;">Dashboard</h2>
-            <p style="color: var(--text-muted); margin-bottom: 32px; font-size: 0.95rem;">Welcome back! Here's what's happening with your emails.</p>
+            <div class="dashboard-banner">
+              <h1 style="font-size: 2.25rem; font-weight: 800; margin-bottom: 8px; letter-spacing: -1px;">Dashboard</h1>
+              <p style="font-size: 1.1rem; opacity: 0.9; font-weight: 500;">Ready to reach your audience? Here's your campaign summary.</p>
+            </div>
 
             <div class="dashboard-grid">
               <div class="stat-card">
                 <div class="stat-header">
                   <div class="stat-icon" style="background: var(--primary-light); color: var(--primary);">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg>
                   </div>
-                  <div class="stat-trend up">↑ 0%</div>
+                  <div class="stat-trend up">+12%</div>
                 </div>
-                <div class="stat-label">Emails Sent</div>
-                <div class="stat-value" id="statSent">0</div>
-                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 8px;">Total emails sent this month</p>
+                <div>
+                  <div class="stat-label">Total Emails Sent</div>
+                  <div class="stat-value" id="statSent">0</div>
+                </div>
               </div>
               <div class="stat-card">
                 <div class="stat-header">
                   <div class="stat-icon" style="background: #eff6ff; color: #2563eb;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
                   </div>
-                  <div class="stat-trend up">↑ 0%</div>
+                  <div class="stat-trend up" style="background: #e0f2fe; color: #0369a1;">Live</div>
                 </div>
-                <div class="stat-label">Recipients Reached</div>
-                <div class="stat-value" id="statRecipients">0</div>
-                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 8px;">Total unique recipients</p>
+                <div>
+                  <div class="stat-label">Total Recipients</div>
+                  <div class="stat-value" id="statRecipients">0</div>
+                </div>
               </div>
               <div class="stat-card">
                 <div class="stat-header">
                   <div class="stat-icon" style="background: #ecfdf5; color: #059669;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><path d="m9 11 3 3L22 4"></path></svg>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><path d="m9 11 3 3L22 4"></path></svg>
                   </div>
-                  <div class="stat-trend success" id="statDeliveryRate">0%</div>
+                  <div class="stat-trend success" style="background: #d1fae5; color: #065f46;" id="statDeliveryRate">100%</div>
                 </div>
-                <div class="stat-label">Delivered</div>
-                <div class="stat-value" id="statDelivered">0</div>
-                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 8px;">Successful delivery rate</p>
+                <div>
+                  <div class="stat-label">Delivery Achievement</div>
+                  <div class="stat-value" id="statDelivered">0</div>
+                </div>
               </div>
-              <div class="stat-card">
+              <div class="stat-card" style="background: var(--bg); border: 1px dashed var(--border);">
                 <div class="stat-header">
-                  <div class="stat-icon" style="background: #fffbeb; color: #d97706;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                  <div class="stat-icon" style="background: #fff7ed; color: #ea580c;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                   </div>
-                  <div class="stat-trend" style="color: var(--warning);">In progress</div>
                 </div>
-                <div class="stat-label">Pending</div>
-                <div class="stat-value">0</div>
-                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 8px;">Current processing queue</p>
+                <div>
+                  <div class="stat-label">Queue Status</div>
+                  <div class="stat-value" style="font-size: 1.5rem; color: var(--text-muted);">Optimal</div>
+                </div>
               </div>
             </div>
 
