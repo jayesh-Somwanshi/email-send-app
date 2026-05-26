@@ -201,7 +201,7 @@ header {
 /* Dashboard Redesign Enhancement v2 - Premium */
 .dashboard-banner {
   background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-  padding: 60px 40px;
+  padding: 32px 40px;
   border-radius: var(--radius-lg);
   color: white;
   margin-bottom: 32px;
