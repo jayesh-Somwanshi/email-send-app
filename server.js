@@ -24,7 +24,7 @@ if (!APP_ORIGIN) {
 const GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
 const GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token";
 const GMAIL_SEND_URL = "https://gmail.googleapis.com/gmail/v1/users/me/messages/send";
-const GOOGLE_SCOPE = "openid email https://www.googleapis.com/auth/gmail.send";
+const GOOGLE_SCOPE = "openid email profile https://www.googleapis.com/auth/gmail.send";
 
 const MIME_TYPES = {
   ".html": "text/html; charset=utf-8",
@@ -207,6 +207,7 @@ async function handleGoogleCallback(req, res) {
       cookie("session_ext", sealSession({
         email: userInfo.email,
         picture: userInfo.picture,
+        name: userInfo.name,
         accessToken: token.access_token,
         refreshToken: token.refresh_token,
         expiresAt: Date.now() + Number(token.expires_in || 3600) * 1000
@@ -283,7 +284,8 @@ function getSessionView(req) {
     ok: true,
     loggedIn: Boolean(session),
     email: session ? session.email : "",
-    picture: session ? session.picture : ""
+    picture: session ? session.picture : "",
+    name: session ? session.name : ""
   };
 }
 
@@ -590,7 +592,8 @@ function getUserInfoFromIdToken(idToken) {
     const payload = JSON.parse(Buffer.from(parts[1], "base64url").toString("utf8"));
     return {
       email: typeof payload.email === "string" ? payload.email : "",
-      picture: typeof payload.picture === "string" ? payload.picture : ""
+      picture: typeof payload.picture === "string" ? payload.picture : "",
+      name: typeof payload.name === "string" ? payload.name : ""
     };
   } catch {
     return { email: "", picture: "" };

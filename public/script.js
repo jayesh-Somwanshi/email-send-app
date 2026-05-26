@@ -151,18 +151,37 @@ async function loadSession() {
     loggedIn = Boolean(session.loggedIn);
     
     const emailStr = loggedIn ? session.email : "Not logged in";
-    if (accountEmail) accountEmail.textContent = emailStr;
-    if (dropdownEmail) dropdownEmail.textContent = emailStr;
+    const nameStr = loggedIn ? (session.name || session.email) : "Not logged in";
+    
+    if (accountEmail) {
+      accountEmail.textContent = nameStr;
+      // If we have a name, show the email as muted text below it
+      const subText = accountEmail.nextElementSibling;
+      if (subText && loggedIn) {
+        subText.textContent = session.email;
+      } else if (subText) {
+        subText.textContent = "Admin Account";
+      }
+    }
+    
+    if (dropdownEmail) {
+      dropdownEmail.textContent = nameStr;
+      const subText = dropdownEmail.nextElementSibling;
+      if (subText && loggedIn) {
+        subText.textContent = session.email;
+      } else if (subText) {
+        subText.textContent = "Admin Account";
+      }
+    }
 
     // Handle Avatar
     const userAvatar = document.getElementById("userAvatar");
     if (userAvatar) {
       if (loggedIn && session.picture) {
-        userAvatar.style.backgroundImage = `url('${session.picture}')`;
-        userAvatar.style.backgroundSize = "cover";
+        userAvatar.innerHTML = `<img src="${session.picture}" alt="Profile" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(session.email)}&background=random'">`;
         userAvatar.style.backgroundColor = "transparent";
       } else {
-        userAvatar.style.backgroundImage = "none";
+        userAvatar.innerHTML = "";
         userAvatar.style.backgroundColor = "#e2e8f0";
       }
     }
