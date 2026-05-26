@@ -43,12 +43,6 @@
             </a>
           </div>
           <div class="nav-item">
-            <a href="#" class="nav-link" data-view="templates">
-              <span class="nav-icon">🎭</span>
-              <span>Templates</span>
-            </a>
-          </div>
-          <div class="nav-item">
             <a href="#" class="nav-link" data-view="contacts">
               <span class="nav-icon">👥</span>
               <span>Contacts</span>
@@ -74,25 +68,30 @@
           </div>
         </nav>
 
-        <div class="sidebar-usage">
-          <div style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 8px; color: #9ca3af;">
-            <span>Email Usage</span>
-            <span id="usageText">0 / 100 emails used</span>
+        <div style="margin-top: auto; padding-top: 20px;">
+          <div class="sidebar-usage">
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 8px; color: rgba(255,255,255,0.6);">
+              <span>Usage</span>
+              <span id="usageText">0 / 100 used</span>
+            </div>
+            <div class="progress-bar" style="background: rgba(255,255,255,0.1);">
+              <div id="usageFill" class="progress-fill" style="width: 0%"></div>
+            </div>
           </div>
-          <div class="progress-bar">
-            <div id="usageFill" class="progress-fill" style="width: 0%"></div>
-          </div>
-          <p style="font-size: 0.7rem; color: #6b7280; margin-top: 8px;">Resets on 1 Jun 2026</p>
-        </div>
 
-        <div class="sidebar-footer">
-          <button type="button" id="logoutButton" class="nav-link" style="width: 100%; border: none; background: transparent; cursor: pointer;" hidden>
-            <span class="nav-icon">🚪</span>
-            <span>Logout</span>
-          </button>
-          <a href="/auth/google" id="loginButton" class="nav-link" style="background: var(--primary); color: white; display: flex; justify-content: center;">
-            <span>Login with Google</span>
-          </a>
+          <div class="sidebar-footer" style="padding: 20px 0 10px 0; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 20px;">
+            <button type="button" id="logoutButton" class="nav-link" style="width: 100%; border: none; background: transparent; cursor: pointer; color: rgba(255,255,255,0.7);" hidden>
+              <span class="nav-icon">🚪</span>
+              <span>Logout</span>
+            </button>
+            <a href="/auth/google" id="loginButton" class="nav-link" style="background: var(--primary); color: white; display: flex; justify-content: center; border-radius: 12px;">
+              <span>Login with Google</span>
+            </a>
+            
+            <div class="copyright" style="margin-top: 24px; text-align: center; font-size: 0.65rem; color: rgba(255,255,255,0.3); font-weight: 500;">
+              &copy; 2026 SMTP MAILER.<br>All rights reserved.
+            </div>
+          </div>
         </div>
       </aside>
 
