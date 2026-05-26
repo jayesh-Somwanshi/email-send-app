@@ -148,7 +148,7 @@ async function handleSend(req, payload) {
     ok: true,
     message: `Email sent separately to ${successCount} recipient${successCount === 1 ? "" : "s"}${
       recipients.length > successCount ? ` (${recipients.length - successCount} failed)` : ""
-    }.`,
+      }.`,
     count: successCount
   };
 }
@@ -333,8 +333,45 @@ function createMessage({ from, to, subject, content, contentType, signature, att
   const boundary = `----=_Part_${Date.now()}_${crypto.randomBytes(8).toString("hex")}`;
   const messageId = `${Date.now()}.${crypto.randomBytes(8).toString("hex")}@email-send-app`;
 
-  // Combine content and signature (remove the -- separator)
-  const fullContent = signature ? `${content}\r\n\r\n${signature}` : content;
+  // If content is plain text, wrap it in a clean, full-width professional HTML structure.
+  let fullContent = "";
+  if (contentType === "plain") {
+    // Escape and convert double newlines to paragraphs for consistent spacing
+    const paragraphs = String(content || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .split(/\n\s*\n/)
+      .map(p => p.trim())
+      .filter(Boolean)
+      .map(p => `<p style="margin: 0 0 16px 0;">${p.replace(/\n/g, "<br>")}</p>`)
+      .join("");
+
+    const escapedSignature = signature ? String(signature)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/\n/g, "<br>") : "";
+
+    fullContent = `
+<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 16px; line-height: 1.6; color: #202124; max-width: 100%; margin: 0 auto; padding: 20px;">
+  <div style="margin-bottom: 32px;">
+    ${paragraphs}
+  </div>
+  ${escapedSignature ? `
+  <div style="border-top: 1px solid #e8eaed; padding-top: 24px; margin-top: 24px; color: #5f6368; font-size: 14px;">
+    ${escapedSignature}
+  </div>` : ""}
+  <div style="margin-top: 40px; padding-top: 20px; border-top: 1px dotted #dadce0; font-size: 11px; color: #9aa0a6; text-align: center;">
+    Sent via Email Send Application
+  </div>
+</div>
+    `.trim();
+    contentType = "html";
+  } else {
+    // If already HTML, just combine with signature if provided
+    fullContent = signature ? `${content}<br><br>${signature}` : content;
+  }
 
   const headers = [
     `From: ${formatAddress(from)}`,
@@ -359,6 +396,7 @@ function createMessage({ from, to, subject, content, contentType, signature, att
   body += `${fullContent}\r\n\r\n`;
 
   body += `--${boundary}\r\n`;
+  // QUOTE the name and filename to handle spaces and special characters correctly
   body += `Content-Type: ${attachment.type || "application/octet-stream"}; name="${attachment.name}"\r\n`;
   body += `Content-Disposition: attachment; filename="${attachment.name}"\r\n`;
   body += "Content-Transfer-Encoding: base64\r\n\r\n";
