@@ -60,6 +60,33 @@ if (logoutButton) {
   });
 }
 
+// Profile Dropdown Logic
+const profileTrigger = document.getElementById("profileTrigger");
+const profileDropdown = document.getElementById("profileDropdown");
+const dropdownLogin = document.getElementById("dropdownLogin");
+const dropdownLogout = document.getElementById("dropdownLogout");
+const dropdownEmail = document.getElementById("dropdownEmail");
+
+if (profileTrigger && profileDropdown) {
+  profileTrigger.addEventListener("click", (e) => {
+    e.stopPropagation();
+    profileDropdown.classList.toggle("active");
+  });
+
+  document.addEventListener("click", () => {
+    profileDropdown.classList.remove("active");
+  });
+
+  profileDropdown.addEventListener("click", (e) => e.stopPropagation());
+}
+
+if (dropdownLogout) {
+  dropdownLogout.addEventListener("click", async () => {
+    await fetch("/api/logout", { method: "POST" });
+    window.location.reload();
+  });
+}
+
 if (form) {
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -122,8 +149,11 @@ async function loadSession() {
     loggedIn = Boolean(session.loggedIn);
     
     if (accountEmail) accountEmail.textContent = loggedIn ? session.email : "Not logged in";
+    if (dropdownEmail) dropdownEmail.textContent = loggedIn ? session.email : "Not logged in";
     if (loginButton) loginButton.style.display = loggedIn ? 'none' : 'flex';
     if (logoutButton) logoutButton.hidden = !loggedIn;
+    if (dropdownLogin) dropdownLogin.hidden = loggedIn;
+    if (dropdownLogout) dropdownLogout.hidden = !loggedIn;
     if (sendButton) sendButton.disabled = !loggedIn;
 
     if (loggedIn) {

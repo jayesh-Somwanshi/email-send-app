@@ -482,3 +482,41 @@ canvas {
     display: none;
   }
 }
+
+.profile-dropdown-container { position: relative; }
+.profile-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 12px;
+  width: 240px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+  padding: 8px;
+  display: none;
+  z-index: 1000;
+}
+.profile-dropdown.active { display: block; }
+.dropdown-header { padding: 12px; border-bottom: 1px solid var(--border); margin-bottom: 8px; }
+.dropdown-header p { margin: 0; font-weight: 600; font-size: 0.875rem; color: var(--text); }
+.dropdown-header span { font-size: 0.75rem; color: var(--text-muted); }
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  text-decoration: none;
+  color: var(--text);
+  font-size: 0.875rem;
+  border-radius: 8px;
+  transition: all 0.2s;
+  width: 100%;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+}
+.dropdown-item:hover { background: var(--bg); }
+.dropdown-divider { height: 1px; background: var(--border); margin: 8px 0; }
