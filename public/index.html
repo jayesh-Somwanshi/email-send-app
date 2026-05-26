@@ -131,6 +131,10 @@
         <div class="view-container">
           <!-- Dashboard View -->
           <div id="dashboardView" class="view active">
+            <!-- Global Dashboard Background Blobs -->
+            <div class="blob" style="width: 500px; height: 500px; top: -100px; left: -100px; background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);"></div>
+            <div class="blob" style="width: 400px; height: 400px; bottom: 100px; right: -50px; background: radial-gradient(circle, rgba(244, 63, 94, 0.1) 0%, transparent 70%);"></div>
+            
             <div class="dashboard-banner">
               <div class="blob blob-1"></div>
               <div class="blob blob-2"></div>
@@ -139,51 +143,54 @@
             </div>
 
             <div class="dashboard-grid">
-              <div class="stat-card">
+              <div class="stat-card vibrant-primary">
                 <div class="stat-header">
-                  <div class="stat-icon" style="background: var(--primary-light); color: var(--primary);">
+                  <div class="stat-icon" style="background: rgba(99, 102, 241, 0.2); color: #6366f1;">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg>
                   </div>
-                  <div class="stat-trend up">+12%</div>
+                  <div class="stat-trend" style="background: rgba(99, 102, 241, 0.1); color: #6366f1;">+12%</div>
                 </div>
                 <div>
                   <div class="stat-label">Total Emails Sent</div>
-                  <div class="stat-value" id="statSent">0</div>
+                  <div class="stat-value" id="totalSent">0</div>
                 </div>
               </div>
-              <div class="stat-card">
+
+              <div class="stat-card vibrant-success">
                 <div class="stat-header">
-                  <div class="stat-icon" style="background: #eff6ff; color: #2563eb;">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                  <div class="stat-icon" style="background: rgba(16, 185, 129, 0.2); color: #10b981;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
                   </div>
-                  <div class="stat-trend up" style="background: #e0f2fe; color: #0369a1;">Live</div>
+                  <div class="stat-trend" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">Live</div>
                 </div>
                 <div>
                   <div class="stat-label">Total Recipients</div>
-                  <div class="stat-value" id="statRecipients">0</div>
+                  <div class="stat-value" id="totalRecipients">0</div>
                 </div>
               </div>
-              <div class="stat-card">
+
+              <div class="stat-card vibrant-amber">
                 <div class="stat-header">
-                  <div class="stat-icon" style="background: #ecfdf5; color: #059669;">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><path d="m9 11 3 3L22 4"></path></svg>
+                  <div class="stat-icon" style="background: rgba(245, 158, 11, 0.2); color: #f59e0b;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
                   </div>
-                  <div class="stat-trend success" style="background: #d1fae5; color: #065f46;" id="statDeliveryRate">100%</div>
+                  <div class="stat-trend" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">0%</div>
                 </div>
                 <div>
                   <div class="stat-label">Delivery Achievement</div>
-                  <div class="stat-value" id="statDelivered">0</div>
+                  <div class="stat-value" id="deliveryRate">0</div>
                 </div>
               </div>
-              <div class="stat-card" style="background: var(--bg); border: 1px dashed var(--border);">
+
+              <div class="stat-card vibrant-rose">
                 <div class="stat-header">
-                  <div class="stat-icon" style="background: #fff7ed; color: #ea580c;">
+                  <div class="stat-icon" style="background: rgba(244, 63, 94, 0.2); color: #f43f5e;">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                   </div>
                 </div>
                 <div>
                   <div class="stat-label">Queue Status</div>
-                  <div class="stat-value" style="font-size: 1.5rem; color: var(--text-muted);">Optimal</div>
+                  <div class="stat-value" style="font-size: 1.75rem;">Optimal</div>
                 </div>
               </div>
             </div>
