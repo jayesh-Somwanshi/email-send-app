@@ -156,6 +156,49 @@ function setLoading(isLoading) {
   if (sendButton) sendButton.textContent = isLoading ? "Sending..." : "Send Email";
 }
 
+async function loadOAuthConfig() {
+  try {
+    const response = await fetch("/api/oauth-config");
+    const config = await response.json();
+    redirectUri = config.redirectUri || "";
+    if (config.googleClientId && document.getElementById("oauthClientId")) document.getElementById("oauthClientId").textContent = config.googleClientId;
+    if (config.appOrigin && document.getElementById("oauthOrigin")) document.getElementById("oauthOrigin").textContent = config.appOrigin;
+    if (redirectUri && document.getElementById("oauthRedirect")) document.getElementById("oauthRedirect").textContent = redirectUri;
+    if (config.localhostRedirectUri && document.getElementById("oauthLocalhostRedirect")) document.getElementById("oauthLocalhostRedirect").textContent = config.localhostRedirectUri;
+
+    const oauthStatus = document.getElementById("oauthStatus");
+    if (config.googleClientConfigured && config.googleSecretConfigured) {
+      if (oauthStatus) {
+        oauthStatus.textContent = "Paste both redirect URIs into this same OAuth Client ID.";
+        oauthStatus.className = "status-badge sent";
+      }
+    } else {
+      if (oauthStatus) {
+        oauthStatus.textContent = "Add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in .env";
+        oauthStatus.className = "status-badge pending";
+      }
+    }
+  } catch {
+    const oauthStatus = document.getElementById("oauthStatus");
+    if (oauthStatus) {
+      oauthStatus.textContent = "Could not load OAuth setup details.";
+      oauthStatus.className = "status-badge pending";
+    }
+  }
+}
+
+const copyRedirectButton = document.getElementById("copyRedirectButton");
+if (copyRedirectButton) {
+  copyRedirectButton.addEventListener("click", async () => {
+    if (!redirectUri) return;
+    await navigator.clipboard.writeText(redirectUri);
+    copyRedirectButton.textContent = "Copied";
+    setTimeout(() => {
+      copyRedirectButton.textContent = "Copy Redirect URI";
+    }, 1400);
+  });
+}
+
 async function loadSession() {
   try {
     const response = await fetch("/api/session");
@@ -188,4 +231,5 @@ function toBase64(file) {
 
 // Initialize
 loadSession();
+loadOAuthConfig();
 updateRecipientCount();

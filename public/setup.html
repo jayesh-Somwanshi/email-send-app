@@ -7,53 +7,119 @@
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
-    <main class="app-shell" style="grid-template-columns: 1fr; max-width: 800px;">
-      <section class="composer">
-        <div class="topbar">
-          <div>
-            <p class="eyebrow">Setup Guide</p>
-            <h1>Google OAuth Configuration</h1>
+    <div class="app-container">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: white; transform: rotate(-10deg);"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg>
           </div>
-          <a href="/" class="status-pill" style="text-decoration: none;">&larr; Back to Dashboard</a>
+          <span class="brand-name">SMTP MAILER</span>
         </div>
 
-        <div class="setup-panel" style="margin-top: 24px;">
-          <p>This application uses the Gmail API to send emails. To make it work, you need to configure a Google Cloud Project and provide the credentials below.</p>
-          
-          <div style="margin: 20px 0; display: grid; gap: 16px;">
-            <div class="hint-list">
-              <p>1. Go to the <a href="https://console.cloud.google.com/" target="_blank">Google Cloud Console</a>.</p>
-              <p>2. Create a new project and enable the <strong>Gmail API</strong>.</p>
-              <p>3. Configure the <strong>OAuth Consent Screen</strong> as "External".</p>
-              <p>4. Create <strong>OAuth 2.0 Client IDs</strong> for a Web Application.</p>
+        <nav class="nav-menu">
+          <div class="nav-item">
+            <a href="/" class="nav-link">
+              <span>📊 Dashboard</span>
+            </a>
+          </div>
+          <div class="nav-item">
+            <a href="/" class="nav-link">
+              <span>✉️ Compose Email</span>
+            </a>
+          </div>
+          <div class="nav-item">
+            <a href="#" class="nav-link active">
+              <span>🔑 OAuth Accounts</span>
+            </a>
+          </div>
+        </nav>
+
+        <div class="sidebar-footer">
+          <button type="button" id="logoutButton" class="nav-link" style="width: 100%; border: none; background: transparent; cursor: pointer;" hidden>
+            <span>🚪 Logout</span>
+          </button>
+          <a href="/auth/google" id="loginButton" class="nav-link" style="background: var(--primary); color: white; display: flex; justify-content: center;">
+            <span>Login with Google</span>
+          </a>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <header>
+          <div class="header-search">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted);"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+            <input type="text" placeholder="Search config..." />
+          </div>
+          <div class="header-actions">
+            <div class="status-pill">Ready</div>
+            <div class="profile-trigger">
+              <div class="avatar"></div>
+              <div style="font-size: 0.875rem;">
+                <p style="margin: 0; font-weight: 600;" id="accountEmail">Not logged in</p>
+                <p style="margin: 0; font-size: 0.75rem; color: var(--text-muted);">Admin Account</p>
+              </div>
             </div>
           </div>
+        </header>
 
-          <span class="setup-title">Step 5: Add these details to your Client ID</span>
-          
-          <p style="margin-top: 16px;">Authorized JavaScript origin</p>
-          <code id="oauthOrigin">Loading...</code>
-          
-          <p>Authorized redirect URI</p>
-          <code id="oauthRedirect">Loading...</code>
-          
-          <p>Also safe to add (for local testing)</p>
-          <code id="oauthLocalhostRedirect">Loading...</code>
-          
-          <div style="margin-top: 20px;">
-            <button type="button" id="copyRedirectButton" class="secondary" style="width: 100%;">Copy Redirect URI</button>
-          </div>
+        <div class="view-container">
+          <div class="view active">
+            <h2 style="font-size: 1.5rem; margin-bottom: 8px;">Google OAuth Setup</h2>
+            <p style="color: var(--text-muted); margin-bottom: 32px;">Configure your credentials to enable Gmail API integration.</p>
 
-          <div style="margin-top: 24px; border-top: 1px solid var(--line); padding-top: 24px;">
-            <span class="setup-title">Step 6: Update Environment Variables</span>
-            <p>Paste the Client ID and Client Secret into your <code>.env</code> file or Vercel environment variables.</p>
-            <p style="margin-top: 12px;">Active Client ID (Last 28 chars)</p>
-            <code id="oauthClientId">Loading...</code>
-            <div id="oauthStatus" class="oauth-status" style="margin-top: 12px;">Checking config...</div>
+            <div class="sections-grid" style="grid-template-columns: 1fr;">
+              <div class="section-card">
+                <div class="section-title">Step-by-Step Configuration</div>
+                <div style="display: grid; gap: 16px; color: var(--text-muted); font-size: 0.95rem;">
+                  <p>1. Go to the <a href="https://console.cloud.google.com/" target="_blank" style="color: var(--primary);">Google Cloud Console</a>.</p>
+                  <p>2. Create a new project and enable the <strong>Gmail API</strong>.</p>
+                  <p>3. Configure the <strong>OAuth Consent Screen</strong> as "External".</p>
+                  <p>4. Create <strong>OAuth 2.0 Client IDs</strong> for a Web Application.</p>
+                </div>
+              </div>
+
+              <div class="section-card" style="margin-top: 24px;">
+                <div class="section-title">Client ID Configuration Details</div>
+                
+                <div style="display: grid; gap: 20px;">
+                  <div>
+                    <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 8px;">Authorized JavaScript origin</label>
+                    <code id="oauthOrigin" style="display: block; padding: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; font-family: monospace; font-size: 0.85rem;">Loading...</code>
+                  </div>
+                  
+                  <div>
+                    <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 8px;">Authorized redirect URI</label>
+                    <code id="oauthRedirect" style="display: block; padding: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; font-family: monospace; font-size: 0.85rem;">Loading...</code>
+                  </div>
+                  
+                  <div>
+                    <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 8px;">Also safe to add (for local testing)</label>
+                    <code id="oauthLocalhostRedirect" style="display: block; padding: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; font-family: monospace; font-size: 0.85rem;">Loading...</code>
+                  </div>
+
+                  <button type="button" id="copyRedirectButton" class="btn btn-secondary btn-block">Copy Redirect URI</button>
+                </div>
+              </div>
+
+              <div class="section-card" style="margin-top: 24px; border-top: 4px solid var(--primary);">
+                <div class="section-title">Environment Variable Status</div>
+                <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 20px;">Ensure these are set in your <code>.env</code> file or hosting provider.</p>
+                
+                <div style="display: grid; gap: 12px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--bg); border-radius: 8px;">
+                    <span style="font-size: 0.875rem; font-weight: 600;">Active Client ID</span>
+                    <code id="oauthClientId" style="font-family: monospace; font-size: 0.75rem;">Loading...</code>
+                  </div>
+                  <div id="oauthStatus" class="status-badge pending" style="text-align: center; padding: 12px;">Checking info...</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </section>
-    </main>
+      </main>
+    </div>
     <script src="/script.js"></script>
   </body>
 </html>
