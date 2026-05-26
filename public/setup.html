@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Google OAuth Setup - Email Send Application</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="app-shell" style="grid-template-columns: 1fr; max-width: 800px;">
+      <section class="composer">
+        <div class="topbar">
+          <div>
+            <p class="eyebrow">Setup Guide</p>
+            <h1>Google OAuth Configuration</h1>
+          </div>
+          <a href="/" class="status-pill" style="text-decoration: none;">&larr; Back to Dashboard</a>
+        </div>
+
+        <div class="setup-panel" style="margin-top: 24px;">
+          <p>This application uses the Gmail API to send emails. To make it work, you need to configure a Google Cloud Project and provide the credentials below.</p>
+          
+          <div style="margin: 20px 0; display: grid; gap: 16px;">
+            <div class="hint-list">
+              <p>1. Go to the <a href="https://console.cloud.google.com/" target="_blank">Google Cloud Console</a>.</p>
+              <p>2. Create a new project and enable the <strong>Gmail API</strong>.</p>
+              <p>3. Configure the <strong>OAuth Consent Screen</strong> as "External".</p>
+              <p>4. Create <strong>OAuth 2.0 Client IDs</strong> for a Web Application.</p>
+            </div>
+          </div>
+
+          <span class="setup-title">Step 5: Add these details to your Client ID</span>
+          
+          <p style="margin-top: 16px;">Authorized JavaScript origin</p>
+          <code id="oauthOrigin">Loading...</code>
+          
+          <p>Authorized redirect URI</p>
+          <code id="oauthRedirect">Loading...</code>
+          
+          <p>Also safe to add (for local testing)</p>
+          <code id="oauthLocalhostRedirect">Loading...</code>
+          
+          <div style="margin-top: 20px;">
+            <button type="button" id="copyRedirectButton" class="secondary" style="width: 100%;">Copy Redirect URI</button>
+          </div>
+
+          <div style="margin-top: 24px; border-top: 1px solid var(--line); padding-top: 24px;">
+            <span class="setup-title">Step 6: Update Environment Variables</span>
+            <p>Paste the Client ID and Client Secret into your <code>.env</code> file or Vercel environment variables.</p>
+            <p style="margin-top: 12px;">Active Client ID (Last 28 chars)</p>
+            <code id="oauthClientId">Loading...</code>
+            <div id="oauthStatus" class="oauth-status" style="margin-top: 12px;">Checking config...</div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script src="/script.js"></script>
+  </body>
+</html>

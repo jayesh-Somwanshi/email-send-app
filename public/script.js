@@ -18,90 +18,100 @@ const copyRedirectButton = document.querySelector("#copyRedirectButton");
 let loggedIn = false;
 let redirectUri = "";
 
-recipientsInput.addEventListener("input", updateRecipientCount);
-clearButton.addEventListener("click", () => {
-  form.reset();
-  updateRecipientCount();
-  showMessage("", "");
-  setStatus("Ready");
-});
+if (recipientsInput) recipientsInput.addEventListener("input", updateRecipientCount);
+if (clearButton) {
+  clearButton.addEventListener("click", () => {
+    form.reset();
+    updateRecipientCount();
+    showMessage("", "");
+    setStatus("Ready");
+  });
+}
 
-logoutButton.addEventListener("click", async () => {
-  await fetch("/api/logout", { method: "POST" });
-  setSession({ loggedIn: false, email: "" });
-  showMessage("Logged out.", "success");
-  setStatus("Ready");
-});
+if (logoutButton) {
+  logoutButton.addEventListener("click", async () => {
+    await fetch("/api/logout", { method: "POST" });
+    setSession({ loggedIn: false, email: "" });
+    showMessage("Logged out.", "success");
+    setStatus("Ready");
+  });
+}
 
-copyRedirectButton.addEventListener("click", async () => {
-  if (!redirectUri) {
-    return;
-  }
-
-  await navigator.clipboard.writeText(redirectUri);
-  copyRedirectButton.textContent = "Copied";
-  setTimeout(() => {
-    copyRedirectButton.textContent = "Copy Redirect URI";
-  }, 1400);
-});
-
-form.addEventListener("submit", async (event) => {
-  event.preventDefault();
-
-  if (!loggedIn) {
-    showMessage("Please login with Google before sending email.", "error");
-    setStatus("Login needed");
-    return;
-  }
-
-  setLoading(true);
-  showMessage("", "");
-  setStatus("Sending");
-
-  const formData = new FormData(form);
-  const data = Object.fromEntries(formData.entries());
-
-  // Handle attachment
-  const fileInput = document.querySelector("#attachment");
-  if (fileInput.files.length > 0) {
-    const file = fileInput.files[0];
-    try {
-      data.attachment = {
-        name: file.name,
-        type: file.type,
-        data: await toBase64(file)
-      };
-    } catch (error) {
-      showMessage("Error reading attachment file.", "error");
-      setLoading(false);
+if (copyRedirectButton) {
+  copyRedirectButton.addEventListener("click", async () => {
+    if (!redirectUri) {
       return;
     }
-  }
 
-  try {
-    const response = await fetch("/api/send", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
-    });
-    const result = await response.json();
+    await navigator.clipboard.writeText(redirectUri);
+    copyRedirectButton.textContent = "Copied";
+    setTimeout(() => {
+      copyRedirectButton.textContent = "Copy Redirect URI";
+    }, 1400);
+  });
+}
 
-    if (!response.ok || !result.ok) {
-      throw new Error(result.message || "Email could not be sent.");
+if (form) {
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    if (!loggedIn) {
+      showMessage("Please login with Google before sending email.", "error");
+      setStatus("Login needed");
+      return;
     }
 
-    showMessage(result.message, "success");
-    setStatus("Sent");
-  } catch (error) {
-    showMessage(error.message, "error");
-    setStatus("Error");
-  } finally {
-    setLoading(false);
-  }
-});
+    setLoading(true);
+    showMessage("", "");
+    setStatus("Sending");
+
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+
+    // Handle attachment
+    const fileInput = document.querySelector("#attachment");
+    if (fileInput && fileInput.files.length > 0) {
+      const file = fileInput.files[0];
+      try {
+        data.attachment = {
+          name: file.name,
+          type: file.type,
+          data: await toBase64(file)
+        };
+      } catch (error) {
+        showMessage("Error reading attachment file.", "error");
+        setLoading(false);
+        return;
+      }
+    }
+
+    try {
+      const response = await fetch("/api/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+      const result = await response.json();
+
+      if (!response.ok || !result.ok) {
+        throw new Error(result.message || "Email could not be sent.");
+      }
+
+      showMessage(result.message, "success");
+      setStatus("Sent");
+    } catch (error) {
+      showMessage(error.message, "error");
+      setStatus("Error");
+    } finally {
+      setLoading(false);
+    }
+  });
+}
 
 function updateRecipientCount() {
-  recipientCount.textContent = parseRecipients(recipientsInput.value).length;
+  if (recipientCount && recipientsInput) {
+    recipientCount.textContent = parseRecipients(recipientsInput.value).length;
+  }
 }
 
 function parseRecipients(value) {
@@ -113,19 +123,23 @@ function parseRecipients(value) {
 }
 
 function showMessage(text, type) {
-  messageBox.textContent = text;
-  messageBox.className = `message-box ${type || ""}`.trim();
-  messageBox.hidden = !text;
+  if (messageBox) {
+    messageBox.textContent = text;
+    messageBox.className = `message-box ${type || ""}`.trim();
+    messageBox.hidden = !text;
+  }
 }
 
 function setStatus(text) {
-  statusPill.textContent = text;
+  if (statusPill) {
+    statusPill.textContent = text;
+  }
 }
 
 function setLoading(isLoading) {
-  sendButton.disabled = isLoading || !loggedIn;
-  clearButton.disabled = isLoading;
-  sendButton.textContent = isLoading ? "Sending..." : "Send Email";
+  if (sendButton) sendButton.disabled = isLoading || !loggedIn;
+  if (clearButton) clearButton.disabled = isLoading;
+  if (sendButton) sendButton.textContent = isLoading ? "Sending..." : "Send Email";
 }
 
 async function loadSession() {
@@ -143,30 +157,36 @@ async function loadOAuthConfig() {
     const response = await fetch("/api/oauth-config");
     const config = await response.json();
     redirectUri = config.redirectUri || "";
-    oauthClientId.textContent = config.googleClientId || "Not set";
-    oauthOrigin.textContent = config.appOrigin || "Not set";
-    oauthRedirect.textContent = redirectUri || "Not set";
-    oauthLocalhostRedirect.textContent = config.localhostRedirectUri || "Not set";
+    if (config.googleClientId && oauthClientId) oauthClientId.textContent = config.googleClientId;
+    if (config.appOrigin && oauthOrigin) oauthOrigin.textContent = config.appOrigin;
+    if (redirectUri && oauthRedirect) oauthRedirect.textContent = redirectUri;
+    if (config.localhostRedirectUri && oauthLocalhostRedirect) oauthLocalhostRedirect.textContent = config.localhostRedirectUri;
 
     if (config.googleClientConfigured && config.googleSecretConfigured) {
-      oauthStatus.textContent = "Paste both redirect URIs into this same OAuth Client ID.";
-      oauthStatus.className = "oauth-status success";
+      if (oauthStatus) {
+        oauthStatus.textContent = "Paste both redirect URIs into this same OAuth Client ID.";
+        oauthStatus.className = "oauth-status success";
+      }
     } else {
-      oauthStatus.textContent = "Add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in .env";
-      oauthStatus.className = "oauth-status error";
+      if (oauthStatus) {
+        oauthStatus.textContent = "Add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in .env";
+        oauthStatus.className = "oauth-status error";
+      }
     }
   } catch {
-    oauthStatus.textContent = "Could not load OAuth setup details.";
-    oauthStatus.className = "oauth-status error";
+    if (oauthStatus) {
+      oauthStatus.textContent = "Could not load OAuth setup details.";
+      oauthStatus.className = "oauth-status error";
+    }
   }
 }
 
 function setSession(session) {
   loggedIn = Boolean(session.loggedIn);
-  accountEmail.textContent = loggedIn ? session.email : "Not logged in";
-  loginButton.hidden = loggedIn;
-  logoutButton.hidden = !loggedIn;
-  sendButton.disabled = !loggedIn;
+  if (accountEmail) accountEmail.textContent = loggedIn ? session.email : "Not logged in";
+  if (loginButton) loginButton.hidden = loggedIn;
+  if (logoutButton) logoutButton.hidden = !loggedIn;
+  if (sendButton) sendButton.disabled = !loggedIn;
   setStatus(loggedIn ? "Ready" : "Login needed");
 }
 
