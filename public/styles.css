@@ -350,29 +350,31 @@ textarea#recipients {
 }
 
 .profile-trigger {
-  padding: 8px 16px;
-  background: rgba(255, 255, 255, 0.5);
-  border: 1px solid rgba(0,0,0,0.05);
-  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px;
+  border-radius: 999px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
+  background: transparent;
 }
 
 .profile-trigger:hover {
-  background: white;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  background: rgba(0, 0, 0, 0.05);
 }
 
 .profile-trigger p[style*="color: var(--text-muted)"], 
 .profile-trigger span[style*="color: var(--text-muted)"] {
-  color: #475569 !important; /* Force higher contrast */
+  color: #475569 !important;
+  opacity: 0.9;
 }
 
 .avatar {
-  width: 44px;
-  height: 44px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  border: 3px solid white;
+  width: 40px;
+  height: 40px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  border: 2px solid white;
 }
 
 .profile-dropdown {
