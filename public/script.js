@@ -157,10 +157,11 @@ async function loadSession() {
       accountEmail.textContent = nameStr;
       const subText = accountEmail.nextElementSibling;
       if (subText && loggedIn) {
-        subText.textContent = (session.name && session.name !== session.email) ? session.email : "";
-        subText.style.display = subText.textContent ? "block" : "none";
+        const showEmail = (session.name && session.name !== session.email);
+        subText.textContent = showEmail ? ` • ${session.email}` : "";
+        subText.style.display = showEmail ? "block" : "none";
       } else if (subText) {
-        subText.textContent = "Admin Account";
+        subText.textContent = " • Admin";
         subText.style.display = "block";
       }
     }
