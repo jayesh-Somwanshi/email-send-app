@@ -26,6 +26,23 @@ const dropdownLogout = document.getElementById("dropdownLogout");
 const navLinks = document.querySelectorAll(".nav-link[data-view]");
 const views = document.querySelectorAll(".view");
 
+// Mobile Sidebar Logic
+const sidebar = document.getElementById("sidebar");
+const sidebarToggle = document.getElementById("sidebarToggle");
+const sidebarOverlay = document.getElementById("sidebarOverlay");
+
+if (sidebarToggle && sidebar && sidebarOverlay) {
+  sidebarToggle.addEventListener("click", () => {
+    sidebar.classList.add("active");
+    sidebarOverlay.classList.add("active");
+  });
+
+  sidebarOverlay.addEventListener("click", () => {
+    sidebar.classList.remove("active");
+    sidebarOverlay.classList.remove("active");
+  });
+}
+
 function switchView(viewId) {
   views.forEach(v => v.classList.remove("active"));
   navLinks.forEach(l => l.classList.remove("active"));
@@ -35,6 +52,12 @@ function switchView(viewId) {
 
   if (targetView) targetView.classList.add("active");
   if (targetLink) targetLink.classList.add("active");
+
+  // Close sidebar on mobile after selection
+  if (window.innerWidth <= 768) {
+    sidebar.classList.remove("active");
+    sidebarOverlay.classList.remove("active");
+  }
 }
 
 navLinks.forEach(link => {
