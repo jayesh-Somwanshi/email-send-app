@@ -12,7 +12,6 @@ const clearButton = document.getElementById("clearButton");
 const sendButton = document.getElementById("sendButton");
 const loginButton = document.getElementById("loginButton");
 const logoutButton = document.getElementById("logoutButton");
-const statusPill = document.getElementById("statusPill");
 const messageBox = document.getElementById("messageBox");
 const accountEmail = document.getElementById("accountEmail");
 
@@ -332,7 +331,20 @@ function showMessage(text, type) {
 }
 
 function setStatus(text) {
-  if (statusPill) statusPill.textContent = text;
+  const statusText = document.getElementById("statusText");
+  const statusIndicator = document.getElementById("statusIndicator");
+  if (statusText) statusText.textContent = text;
+  
+  if (statusIndicator) {
+    const isReady = text.toLowerCase().includes("ready");
+    const color = isReady ? "var(--success)" : "var(--primary)";
+    statusIndicator.style.color = color;
+    const dot = statusIndicator.querySelector("span");
+    if (dot) {
+      dot.style.background = color;
+      dot.style.boxShadow = `0 0 8px ${color}`;
+    }
+  }
 }
 
 function setLoading(isLoading) {
@@ -341,6 +353,7 @@ function setLoading(isLoading) {
     sendButton.textContent = isLoading ? "Sending..." : "Send Email";
   }
   if (clearButton) clearButton.disabled = isLoading;
+  setStatus(isLoading ? "Sending..." : "Ready");
 }
 
 function formatDate(ts) {
