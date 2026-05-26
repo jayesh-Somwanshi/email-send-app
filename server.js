@@ -1,8 +1,10 @@
-const http = require("http");
-const https = require("https");
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
+const http = require("http");
+const https = require("https");
+
+const STATS_FILE = path.join(__dirname, "data", "stats.json");
 
 loadEnv(path.join(__dirname, ".env"));
 
@@ -64,6 +66,11 @@ const server = http.createServer(async (req, res) => {
       const body = await readJson(req);
       const result = await handleSend(req, res, body);
       sendJson(res, 200, result);
+      return;
+    }
+
+    if (req.method === "GET" && req.url === "/api/stats") {
+      sendJson(res, 200, getStats());
       return;
     }
 
@@ -140,9 +147,11 @@ async function handleSend(req, res, payload) {
   }
 
   if (successCount === 0 && lastError) {
+    recordEmail(recipients, subject, false);
     throw lastError;
   }
 
+  recordEmail(recipients, subject, true);
   return {
     ok: true,
     message: `Email sent separately to ${successCount} recipient${successCount === 1 ? "" : "s"}${
@@ -669,6 +678,48 @@ function publicError(statusCode, publicMessage) {
   return error;
 }
 
+function getStats() {
+  try {
+    if (!fs.existsSync(STATS_FILE)) {
+      return { sent: 0, failed: 0, recipients: 0, history: [] };
+    }
+    const data = fs.readFileSync(STATS_FILE, "utf-8");
+    return JSON.parse(data);
+  } catch (error) {
+    console.error("Error reading stats:", error);
+    return { sent: 0, failed: 0, recipients: 0, history: [] };
+  }
+}
+
+function recordEmail(recipientList, subject, success) {
+  try {
+    const stats = getStats();
+    if (success) {
+      stats.sent += 1;
+      stats.recipients += recipientList.length;
+    } else {
+      stats.failed += 1;
+    }
+
+    // Add to history (keep last 20)
+    const entry = {
+      subject,
+      recipient: recipientList.length > 1 ? `${recipientList[0]} + ${recipientList.length - 1} more` : recipientList[0],
+      status: success ? "sent" : "failed",
+      date: new RegExp(/^\d+ minutes ago/).test("2 mins ago") ? "Just now" : new Date().toISOString() // Simpler for demo
+    };
+    
+    // For realistic dates in demo, let's use a real timestamp
+    entry.timestamp = Date.now();
+
+    stats.history.unshift(entry);
+    if (stats.history.length > 20) stats.history.pop();
+
+    fs.writeFileSync(STATS_FILE, JSON.stringify(stats, null, 2));
+  } catch (error) {
+    console.error("Error recording email:", error);
+  }
+}
 function loadEnv(filePath) {
   if (!fs.existsSync(filePath)) {
     return;

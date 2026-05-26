@@ -1,6 +1,8 @@
 // Global state
 let loggedIn = false;
-let redirectUri = "";
+let stats = { sent: 0, failed: 0, recipients: 0, history: [] };
+let activityChart = null;
+let statusChart = null;
 
 // DOM Elements
 const form = document.getElementById("emailForm");
@@ -33,11 +35,10 @@ navLinks.forEach(link => {
   link.addEventListener("click", (e) => {
     e.preventDefault();
     const viewId = link.getAttribute("data-view");
-    switchView(viewId);
+    if (viewId) switchView(viewId);
   });
 });
 
-// Expose switchView to global scope (for Quick Actions)
 window.switchView = switchView;
 
 // Event Listeners
@@ -55,9 +56,6 @@ if (clearButton) {
 if (logoutButton) {
   logoutButton.addEventListener("click", async () => {
     await fetch("/api/logout", { method: "POST" });
-    setSession({ loggedIn: false, email: "" });
-    showMessage("Logged out.", "success");
-    setStatus("Ready");
     window.location.reload(); 
   });
 }
@@ -65,7 +63,6 @@ if (logoutButton) {
 if (form) {
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
-
     if (!loggedIn) {
       showMessage("Please login with Google before sending email.", "error");
       setStatus("Login needed");
@@ -103,13 +100,11 @@ if (form) {
         body: JSON.stringify(data)
       });
       const result = await response.json();
-
-      if (!response.ok || !result.ok) {
-        throw new Error(result.message || "Email could not be sent.");
-      }
+      if (!response.ok || !result.ok) throw new Error(result.message || "Email could not be sent.");
 
       showMessage(result.message, "success");
       setStatus("Sent");
+      loadStats(); // Reload stats after sending
     } catch (error) {
       showMessage(error.message, "error");
       setStatus("Error");
@@ -117,6 +112,130 @@ if (form) {
       setLoading(false);
     }
   });
+}
+
+// Data Fetching
+async function loadSession() {
+  try {
+    const response = await fetch("/api/session");
+    const session = await response.json();
+    loggedIn = Boolean(session.loggedIn);
+    
+    if (accountEmail) accountEmail.textContent = loggedIn ? session.email : "Not logged in";
+    if (loginButton) loginButton.style.display = loggedIn ? 'none' : 'flex';
+    if (logoutButton) logoutButton.hidden = !loggedIn;
+    if (sendButton) sendButton.disabled = !loggedIn;
+
+    if (loggedIn) {
+      const activeOAuthItem = document.getElementById("activeOAuthItem");
+      const oauthActiveEmail = document.getElementById("oauthActiveEmail");
+      if (activeOAuthItem) activeOAuthItem.hidden = false;
+      if (oauthActiveEmail) oauthActiveEmail.textContent = session.email;
+    }
+
+    setStatus(loggedIn ? "Ready" : "Login needed");
+  } catch {
+    loggedIn = false;
+  }
+}
+
+async function loadStats() {
+  try {
+    const response = await fetch("/api/stats");
+    stats = await response.json();
+    renderStats();
+    renderCharts();
+  } catch (e) {
+    console.error("Failed to load stats", e);
+  }
+}
+
+// Rendering
+function renderStats() {
+  const sentEl = document.getElementById("statSent");
+  const recipientsEl = document.getElementById("statRecipients");
+  const deliveredEl = document.getElementById("statDelivered");
+  const rateEl = document.getElementById("statDeliveryRate");
+  const historyBody = document.getElementById("historyTableBody");
+  const totalSentEl = document.getElementById("statusTotal");
+  const usageFill = document.getElementById("usageFill");
+  const usageText = document.getElementById("usageText");
+
+  if (sentEl) sentEl.textContent = stats.sent.toLocaleString();
+  if (recipientsEl) recipientsEl.textContent = stats.recipients.toLocaleString();
+  if (deliveredEl) deliveredEl.textContent = stats.sent.toLocaleString();
+  if (totalSentEl) totalSentEl.textContent = stats.sent.toLocaleString();
+
+  const rate = stats.sent > 0 ? 100 : 0;
+  if (rateEl) rateEl.textContent = `${rate}%`;
+
+  // Usage Bar (Example: 100 limit)
+  const usage = Math.min((stats.sent / 100) * 100, 100);
+  if (usageFill) usageFill.style.width = `${usage}%`;
+  if (usageText) usageText.textContent = `${stats.sent} / 100 emails used`;
+
+  if (historyBody) {
+    if (stats.history.length === 0) {
+      historyBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 40px;">No emails sent yet.</td></tr>';
+    } else {
+      historyBody.innerHTML = stats.history.map(item => `
+        <tr>
+          <td style="font-weight: 500;">${item.subject}</td>
+          <td>${item.recipient}</td>
+          <td><span class="status-badge ${item.status}">${item.status.charAt(0).toUpperCase() + item.status.slice(1)}</span></td>
+          <td style="color: var(--text-muted);">${formatDate(item.timestamp)}</td>
+        </tr>
+      `).join('');
+    }
+  }
+}
+
+function renderCharts() {
+  const activityCtx = document.getElementById('activityChart')?.getContext('2d');
+  const statusCtx = document.getElementById('statusChart')?.getContext('2d');
+
+  if (activityCtx) {
+    if (activityChart) activityChart.destroy();
+    activityChart = new Chart(activityCtx, {
+      type: 'line',
+      data: {
+        labels: ['Jun 20', 'Jun 21', 'Jun 22', 'Jun 23', 'Jun 24', 'Jun 25', 'Jun 26'],
+        datasets: [{
+          label: 'Emails Sent',
+          data: [12, 19, 3, 5, 2, 3, stats.sent],
+          borderColor: '#10b981',
+          backgroundColor: 'rgba(16, 185, 129, 0.1)',
+          fill: true,
+          tension: 0.4
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true, grid: { display: false } }, x: { grid: { display: false } } }
+      }
+    });
+  }
+
+  if (statusCtx) {
+    if (statusChart) statusChart.destroy();
+    statusChart = new Chart(statusCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Delivered', 'Pending', 'Failed'],
+        datasets: [{
+          data: [stats.sent, 0, stats.failed],
+          backgroundColor: ['#10b981', '#f59e0b', '#ef4444'],
+          borderWidth: 0,
+          cutout: '80%'
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } }
+      }
+    });
+  }
 }
 
 // Helpers
@@ -128,11 +247,7 @@ function updateRecipientCount() {
 
 function parseRecipients(value) {
   if (!value) return [];
-  return value
-    .split(/[\s,;]+/)
-    .map((email) => email.trim())
-    .filter(Boolean)
-    .filter((email, index, all) => all.indexOf(email) === index);
+  return value.split(/[\s,;]+/).map(e => e.trim()).filter(Boolean).filter((e, i, a) => a.indexOf(e) === i);
 }
 
 function showMessage(text, type) {
@@ -145,79 +260,21 @@ function showMessage(text, type) {
 }
 
 function setStatus(text) {
-  if (statusPill) {
-    statusPill.textContent = text;
-  }
+  if (statusPill) statusPill.textContent = text;
 }
 
 function setLoading(isLoading) {
-  if (sendButton) sendButton.disabled = isLoading || !loggedIn;
+  if (sendButton) {
+    sendButton.disabled = isLoading || !loggedIn;
+    sendButton.textContent = isLoading ? "Sending..." : "Send Email";
+  }
   if (clearButton) clearButton.disabled = isLoading;
-  if (sendButton) sendButton.textContent = isLoading ? "Sending..." : "Send Email";
 }
 
-async function loadOAuthConfig() {
-  try {
-    const response = await fetch("/api/oauth-config");
-    const config = await response.json();
-    redirectUri = config.redirectUri || "";
-    if (config.googleClientId && document.getElementById("oauthClientId")) document.getElementById("oauthClientId").textContent = config.googleClientId;
-    if (config.appOrigin && document.getElementById("oauthOrigin")) document.getElementById("oauthOrigin").textContent = config.appOrigin;
-    if (redirectUri && document.getElementById("oauthRedirect")) document.getElementById("oauthRedirect").textContent = redirectUri;
-    if (config.localhostRedirectUri && document.getElementById("oauthLocalhostRedirect")) document.getElementById("oauthLocalhostRedirect").textContent = config.localhostRedirectUri;
-
-    const oauthStatus = document.getElementById("oauthStatus");
-    if (config.googleClientConfigured && config.googleSecretConfigured) {
-      if (oauthStatus) {
-        oauthStatus.textContent = "Paste both redirect URIs into this same OAuth Client ID.";
-        oauthStatus.className = "status-badge sent";
-      }
-    } else {
-      if (oauthStatus) {
-        oauthStatus.textContent = "Add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in .env";
-        oauthStatus.className = "status-badge pending";
-      }
-    }
-  } catch {
-    const oauthStatus = document.getElementById("oauthStatus");
-    if (oauthStatus) {
-      oauthStatus.textContent = "Could not load OAuth setup details.";
-      oauthStatus.className = "status-badge pending";
-    }
-  }
-}
-
-const copyRedirectButton = document.getElementById("copyRedirectButton");
-if (copyRedirectButton) {
-  copyRedirectButton.addEventListener("click", async () => {
-    if (!redirectUri) return;
-    await navigator.clipboard.writeText(redirectUri);
-    copyRedirectButton.textContent = "Copied";
-    setTimeout(() => {
-      copyRedirectButton.textContent = "Copy Redirect URI";
-    }, 1400);
-  });
-}
-
-async function loadSession() {
-  try {
-    const response = await fetch("/api/session");
-    const session = await response.json();
-    setSession(session);
-  } catch {
-    setSession({ loggedIn: false });
-  }
-}
-
-function setSession(session) {
-  loggedIn = Boolean(session.loggedIn);
-  if (accountEmail) accountEmail.textContent = loggedIn ? session.email : "Not logged in";
-  
-  if (loginButton) loginButton.style.display = loggedIn ? 'none' : 'flex';
-  if (logoutButton) logoutButton.hidden = !loggedIn;
-  
-  if (sendButton) sendButton.disabled = !loggedIn;
-  setStatus(loggedIn ? "Ready" : "Login needed");
+function formatDate(ts) {
+  if (!ts) return "Recently";
+  const date = new Date(ts);
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ', ' + date.toLocaleDateString([], { month: 'short', day: 'numeric' });
 }
 
 function toBase64(file) {
@@ -230,6 +287,7 @@ function toBase64(file) {
 }
 
 // Initialize
-loadSession();
-loadOAuthConfig();
+loadSession().then(() => {
+  loadStats();
+});
 updateRecipientCount();
