@@ -153,6 +153,19 @@ async function loadSession() {
     const emailStr = loggedIn ? session.email : "Not logged in";
     if (accountEmail) accountEmail.textContent = emailStr;
     if (dropdownEmail) dropdownEmail.textContent = emailStr;
+
+    // Handle Avatar
+    const userAvatar = document.getElementById("userAvatar");
+    if (userAvatar) {
+      if (loggedIn && session.picture) {
+        userAvatar.style.backgroundImage = `url('${session.picture}')`;
+        userAvatar.style.backgroundSize = "cover";
+        userAvatar.style.backgroundColor = "transparent";
+      } else {
+        userAvatar.style.backgroundImage = "none";
+        userAvatar.style.backgroundColor = "#e2e8f0";
+      }
+    }
     
     // Toggle Visibility
     if (loginButton) loginButton.style.display = loggedIn ? 'none' : 'flex';

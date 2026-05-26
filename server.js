@@ -195,9 +195,9 @@ async function handleGoogleCallback(req, res) {
   }
 
   const token = await exchangeCodeForToken(code);
-  const email = getEmailFromIdToken(token.id_token);
+  const userInfo = getUserInfoFromIdToken(token.id_token);
 
-  if (!email) {
+  if (!userInfo.email) {
     throw publicError(400, "Google did not return an email address. Please try again.");
   }
 
@@ -205,7 +205,8 @@ async function handleGoogleCallback(req, res) {
     Location: "/",
     "Set-Cookie": [
       cookie("session_ext", sealSession({
-        email,
+        email: userInfo.email,
+        picture: userInfo.picture,
         accessToken: token.access_token,
         refreshToken: token.refresh_token,
         expiresAt: Date.now() + Number(token.expires_in || 3600) * 1000
@@ -281,7 +282,8 @@ function getSessionView(req) {
   return {
     ok: true,
     loggedIn: Boolean(session),
-    email: session ? session.email : ""
+    email: session ? session.email : "",
+    picture: session ? session.picture : ""
   };
 }
 
@@ -574,21 +576,24 @@ function postForm(url, body) {
   });
 }
 
-function getEmailFromIdToken(idToken) {
+function getUserInfoFromIdToken(idToken) {
   if (!idToken) {
-    return "";
+    return { email: "", picture: "" };
   }
 
   const parts = idToken.split(".");
   if (parts.length < 2) {
-    return "";
+    return { email: "", picture: "" };
   }
 
   try {
     const payload = JSON.parse(Buffer.from(parts[1], "base64url").toString("utf8"));
-    return typeof payload.email === "string" ? payload.email : "";
+    return {
+      email: typeof payload.email === "string" ? payload.email : "",
+      picture: typeof payload.picture === "string" ? payload.picture : ""
+    };
   } catch {
-    return "";
+    return { email: "", picture: "" };
   }
 }
 
