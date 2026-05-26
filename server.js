@@ -23,7 +23,6 @@ const GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
 const GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token";
 const GMAIL_SEND_URL = "https://gmail.googleapis.com/gmail/v1/users/me/messages/send";
 const GOOGLE_SCOPE = "openid email https://www.googleapis.com/auth/gmail.send";
-const sessions = new Map();
 
 const MIME_TYPES = {
   ".html": "text/html; charset=utf-8",
@@ -63,7 +62,7 @@ const server = http.createServer(async (req, res) => {
 
     if (req.method === "POST" && req.url === "/api/send") {
       const body = await readJson(req);
-      const result = await handleSend(req, body);
+      const result = await handleSend(req, res, body);
       sendJson(res, 200, result);
       return;
     }
@@ -87,7 +86,7 @@ server.listen(PORT, HOST, () => {
   console.log(`Email Send Application running at http://${HOST}:${PORT}`);
 });
 
-async function handleSend(req, payload) {
+async function handleSend(req, res, payload) {
   const session = await requireGoogleSession(req);
   const recipients = parseRecipients(payload.recipients);
   const subject = String(payload.subject || "").trim();
@@ -115,7 +114,7 @@ async function handleSend(req, payload) {
 
   const senderName = String(payload.senderName || "").trim();
   const from = senderName ? `${senderName} <${session.email}>` : session.email;
-  const accessToken = await ensureAccessToken(session);
+  const accessToken = await ensureAccessToken(session, res);
 
   let successCount = 0;
   let lastError = null;
@@ -193,18 +192,15 @@ async function handleGoogleCallback(req, res) {
     throw publicError(400, "Google did not return an email address. Please try again.");
   }
 
-  const sessionId = randomId();
-  sessions.set(sessionId, {
-    email,
-    accessToken: token.access_token,
-    refreshToken: token.refresh_token,
-    expiresAt: Date.now() + Number(token.expires_in || 3600) * 1000
-  });
-
   res.writeHead(302, {
     Location: "/",
     "Set-Cookie": [
-      cookie("session_id", sessionId, { maxAge: 86400, httpOnly: true }),
+      cookie("session_ext", sealSession({
+        email,
+        accessToken: token.access_token,
+        refreshToken: token.refresh_token,
+        expiresAt: Date.now() + Number(token.expires_in || 3600) * 1000
+      }), { maxAge: 86400, httpOnly: true }),
       cookie("oauth_state", "", { maxAge: 0, httpOnly: true })
     ]
   });
@@ -223,13 +219,12 @@ async function exchangeCodeForToken(code) {
   return postForm(GOOGLE_TOKEN_URL, body);
 }
 
-async function refreshAccessToken(session) {
+async function refreshAccessToken(session, res) {
   if (!session.refreshToken) {
     throw publicError(401, "Your Google login expired. Please login with Google again.");
   }
 
   const body = new URLSearchParams({
-    code,
     client_id: process.env.GOOGLE_CLIENT_ID,
     client_secret: process.env.GOOGLE_CLIENT_SECRET,
     refresh_token: session.refreshToken,
@@ -239,15 +234,21 @@ async function refreshAccessToken(session) {
   const token = await postForm(GOOGLE_TOKEN_URL, body);
   session.accessToken = token.access_token;
   session.expiresAt = Date.now() + Number(token.expires_in || 3600) * 1000;
+
+  // Persist updated session back to cookie
+  if (res) {
+    res.setHeader("Set-Cookie", cookie("session_ext", sealSession(session), { maxAge: 86400, httpOnly: true }));
+  }
+
   return session.accessToken;
 }
 
-async function ensureAccessToken(session) {
+async function ensureAccessToken(session, res) {
   if (session.expiresAt - Date.now() > 60000) {
     return session.accessToken;
   }
 
-  return refreshAccessToken(session);
+  return refreshAccessToken(session, res);
 }
 
 async function requireGoogleSession(req) {
@@ -261,8 +262,8 @@ async function requireGoogleSession(req) {
 }
 
 function getSession(req) {
-  const sessionId = parseCookies(req).session_id;
-  return sessionId ? sessions.get(sessionId) : null;
+  const sessionExt = parseCookies(req).session_ext;
+  return sessionExt ? unsealSession(sessionExt) : null;
 }
 
 function getSessionView(req) {
@@ -291,12 +292,7 @@ function getOAuthConfigView() {
 }
 
 function destroySession(req, res) {
-  const sessionId = parseCookies(req).session_id;
-  if (sessionId) {
-    sessions.delete(sessionId);
-  }
-
-  res.setHeader("Set-Cookie", cookie("session_id", "", { maxAge: 0, httpOnly: true }));
+  res.setHeader("Set-Cookie", cookie("session_ext", "", { maxAge: 0, httpOnly: true }));
 }
 
 function assertGoogleConfig() {
@@ -625,6 +621,36 @@ function cookie(name, value, options = {}) {
 
 function randomId() {
   return crypto.randomBytes(24).toString("hex");
+}
+
+function sealSession(payload) {
+  const key = getCryptoKey();
+  const iv = crypto.randomBytes(16);
+  const cipher = crypto.createCipheriv("aes-256-cbc", key, iv);
+  const encrypted = Buffer.concat([cipher.update(JSON.stringify(payload)), cipher.final()]);
+  return `${iv.toString("hex")}.${encrypted.toString("hex")}`;
+}
+
+function unsealSession(token) {
+  try {
+    const [ivHex, encryptedHex] = token.split(".");
+    if (!ivHex || !encryptedHex) return null;
+    const key = getCryptoKey();
+    const iv = Buffer.from(ivHex, "hex");
+    const encrypted = Buffer.from(encryptedHex, "hex");
+    const decipher = crypto.createDecipheriv("aes-256-cbc", key, iv);
+    const decrypted = Buffer.concat([decipher.update(encrypted), decipher.final()]);
+    return JSON.parse(decrypted.toString("utf8"));
+  } catch (e) {
+    console.error("Session decryption failed:", e);
+    return null;
+  }
+}
+
+function getCryptoKey() {
+  const secret = process.env.SESSION_SECRET || process.env.GOOGLE_CLIENT_SECRET || "default_fallback_secret_32_chars_long!!";
+  // Hash secret to ensure it's exactly 32 bytes for aes-256
+  return crypto.createHash("sha256").update(secret).digest();
 }
 
 function maskClientId(clientId) {
