@@ -7,111 +7,235 @@
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
-    <main class="app-shell">
-      <section class="composer">
-        <div class="topbar">
-          <div>
-            <p class="eyebrow">SMTP Mailer</p>
-            <!-- <h1>Email Send Application</h1> -->
+    <div class="app-container">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: white; transform: rotate(-10deg);"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg>
           </div>
-          <div class="status-pill" id="statusPill">Ready</div>
+          <span class="brand-name">SMTP MAILER</span>
         </div>
 
-        <div class="auth-panel">
-          <div>
-            <span class="auth-label">Google Account</span>
-            <strong id="accountEmail">Not logged in</strong>
+        <nav class="nav-menu">
+          <div class="nav-item">
+            <a href="#" class="nav-link active" data-view="dashboard">
+              <span>📊 Dashboard</span>
+            </a>
           </div>
-          <div class="auth-actions">
-            <a class="google-button" id="loginButton" href="/auth/google">Login with Google</a>
-            <button type="button" id="logoutButton" class="secondary" hidden>Logout</button>
+          <div class="nav-item">
+            <a href="#" class="nav-link" data-view="compose">
+              <span>✉️ Compose Email</span>
+            </a>
           </div>
+          <div class="nav-item">
+            <a href="#" class="nav-link" data-view="history">
+              <span>🕒 Email History</span>
+            </a>
+          </div>
+          <div class="nav-item">
+            <a href="#" class="nav-link" data-view="templates">
+              <span>🎭 Templates</span>
+            </a>
+          </div>
+          <div class="nav-item">
+            <a href="#" class="nav-link" data-view="contacts">
+              <span>👥 Contacts</span>
+            </a>
+          </div>
+          <div class="nav-item">
+            <a href="/setup.html" class="nav-link">
+              <span>🔑 OAuth Accounts</span>
+            </a>
+          </div>
+          <div class="nav-item">
+            <a href="#" class="nav-link" data-view="settings">
+              <span>⚙️ Settings</span>
+            </a>
+          </div>
+        </nav>
+
+        <div class="sidebar-footer">
+          <button type="button" id="logoutButton" class="nav-link" style="width: 100%; border: none; background: transparent; cursor: pointer;" hidden>
+            <span>🚪 Logout</span>
+          </button>
+          <a href="/auth/google" id="loginButton" class="nav-link" style="background: var(--primary); color: white; display: flex; justify-content: center;">
+            <span>Login with Google</span>
+          </a>
         </div>
+      </aside>
 
-        <form id="emailForm" class="email-form">
-          <label>
-            <span>Sender Name</span>
-            <input id="senderName" name="senderName" type="text" placeholder="Your name" />
-          </label>
+      <!-- Main Content -->
+      <main class="main-content">
+        <header>
+          <div class="header-search">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted);"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+            <input type="text" placeholder="Search emails, contacts..." />
+          </div>
+          <div class="header-actions">
+            <div class="status-pill" id="statusPill">Ready</div>
+            <div class="profile-trigger">
+              <div class="avatar"></div>
+              <div style="font-size: 0.875rem;">
+                <p style="margin: 0; font-weight: 600;" id="accountEmail">Not logged in</p>
+                <p style="margin: 0; font-size: 0.75rem; color: var(--text-muted);">Admin Account</p>
+              </div>
+            </div>
+          </div>
+        </header>
 
-          <label>
-            <span>Recipients</span>
-            <textarea
-              id="recipients"
-              name="recipients"
-              rows="5"
-              placeholder="person1@example.com, person2@example.com"
-              required
-            ></textarea>
-          </label>
+        <div class="view-container">
+          <!-- Dashboard View -->
+          <div id="dashboardView" class="view active">
+            <h2 style="font-size: 1.5rem; margin-bottom: 8px;">Dashboard</h2>
+            <p style="color: var(--text-muted); margin-bottom: 32px;">Welcome back! Here's what's happening with your emails.</p>
 
-          <label>
-            <span>Subject</span>
-            <input id="subject" name="subject" type="text" placeholder="Your email subject" required />
-          </label>
+            <div class="dashboard-grid">
+              <div class="stat-card">
+                <div class="stat-header">
+                  <span class="stat-label">Emails Sent</span>
+                  <div class="stat-trend up">↑ 12%</div>
+                </div>
+                <div class="stat-value">2,842</div>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 8px;">Total emails sent</p>
+              </div>
+              <div class="stat-card">
+                <div class="stat-header">
+                  <span class="stat-label">Recipients Reached</span>
+                  <div class="stat-trend up">↑ 8%</div>
+                </div>
+                <div class="stat-value">4,120</div>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 8px;">Unique recipients</p>
+              </div>
+              <div class="stat-card">
+                <div class="stat-header">
+                  <span class="stat-label">Delivered</span>
+                  <div class="stat-trend up">99.2%</div>
+                </div>
+                <div class="stat-value">2,818</div>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 8px;">Successful delivery</p>
+              </div>
+              <div class="stat-card">
+                <div class="stat-header">
+                  <span class="stat-label">Pending</span>
+                  <div class="stat-trend" style="color: var(--warning);">In progress</div>
+                </div>
+                <div class="stat-value">24</div>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 8px;">Scheduled emails</p>
+              </div>
+            </div>
 
-          <div class="format-row">
-            <span>Content Type</span>
-            <div class="segmented" role="radiogroup" aria-label="Email format">
-              <label>
-                <input type="radio" name="format" value="text" checked />
-                <span>Text</span>
-              </label>
-              <label>
-                <input type="radio" name="format" value="html" />
-                <span>HTML</span>
-              </label>
+            <div class="sections-grid">
+              <div class="section-card">
+                <div class="section-title">Email Activity Overview</div>
+                <div class="mock-chart">
+                  <div class="mock-line"></div>
+                </div>
+              </div>
+              <div class="section-card">
+                <div class="section-title">Quick Actions</div>
+                <div style="display: grid; gap: 12px;">
+                  <button class="btn btn-secondary btn-block" style="justify-content: flex-start;" onclick="switchView('compose')">✉️ Compose New Email</button>
+                  <button class="btn btn-secondary btn-block" style="justify-content: flex-start;">🕒 View Email History</button>
+                  <button class="btn btn-secondary btn-block" style="justify-content: flex-start;">🎭 Manage Templates</button>
+                  <button class="btn btn-secondary btn-block" style="justify-content: flex-start;">👥 Add Contacts</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-card" style="margin-top: 24px;">
+              <div class="section-title">
+                Recent Emails
+                <a href="#" style="font-size: 0.875rem; color: var(--primary); text-decoration: none;">View all &rarr;</a>
+              </div>
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Subject</th>
+                    <th>Recipient</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="font-weight: 500;">Application for Java developer role</td>
+                    <td>somwanshijayesh93@gmail.com</td>
+                    <td><span class="status-badge sent">Sent</span></td>
+                    <td>2 mins ago</td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight: 500;">Weekly Project Update</td>
+                    <td>team@company.com</td>
+                    <td><span class="status-badge sent">Sent</span></td>
+                    <td>1 hour ago</td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight: 500;">Newsletter - May 2026</td>
+                    <td>multipe-recipients...</td>
+                    <td><span class="status-badge pending">Pending</span></td>
+                    <td>3 hours ago</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
 
-          <label>
-            <span>Email Content</span>
-            <textarea
-              id="content"
-              name="content"
-              rows="12"
-              placeholder="Write your email content here..."
-              required
-            ></textarea>
-          </label>
+          <!-- Compose View -->
+          <div id="composeView" class="view">
+            <h2 style="font-size: 1.5rem; margin-bottom: 8px;">Compose Email</h2>
+            <p style="color: var(--text-muted); margin-bottom: 32px;">Create and send a professional email via your Google account.</p>
 
+            <form id="emailForm" class="composer-card">
+              <div class="form-group">
+                <label>Sender Name</label>
+                <input id="senderName" name="senderName" type="text" placeholder="Jayesh Somwanshi" />
+              </div>
 
-          <label>
-            <span>Attachment</span>
-            <input id="attachment" name="attachment" type="file" />
-          </label>
+              <div class="form-group">
+                <label>Recipients</label>
+                <textarea id="recipients" name="recipients" rows="3" placeholder="Enter emails separated by commas or spaces..." required></textarea>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 6px;">
+                  <strong id="recipientCount">0</strong> recipients detected
+                </p>
+              </div>
 
-          <div class="actions">
-            <button type="button" id="clearButton" class="secondary">Clear</button>
-            <button type="submit" id="sendButton">Send Email</button>
+              <div class="form-group">
+                <label>Subject</label>
+                <input id="subject" name="subject" type="text" placeholder="Enter email subject" required />
+              </div>
+
+              <div class="form-group">
+                <label>Content Type</label>
+                <select name="format">
+                  <option value="text" selected>Plain Text</option>
+                  <option value="html">HTML Format</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Email Content</label>
+                <textarea id="content" name="content" rows="10" placeholder="Write your email message here..." required></textarea>
+              </div>
+
+              <div class="form-group">
+                <label>Attachments</label>
+                <input id="attachment" name="attachment" type="file" style="border: 1px dashed var(--border); padding: 20px; background: var(--bg);" />
+              </div>
+
+              <div id="messageBox" class="message-box" style="margin-bottom: 24px;" hidden></div>
+
+              <div style="display: flex; gap: 16px;">
+                <button type="submit" id="sendButton" class="btn btn-primary" style="flex: 1;">🚀 Send Email</button>
+                <button type="button" id="clearButton" class="btn btn-secondary">Clear</button>
+              </div>
+            </form>
           </div>
-        </form>
-      </section>
+        </div>
+      </main>
+    </div>
 
-      <aside class="side-panel">
-        <div class="metric">
-          <span id="recipientCount">0</span>
-          <p>Recipients detected</p>
-        </div>
-        <div class="setup-panel">
-          <span class="setup-title">System Configuration</span>
-          <p>Google OAuth is required to send emails via your account.</p>
-          <a href="/setup.html" class="google-button" style="width: 100%; border-radius: 6px; font-size: 0.9rem; min-height: 40px; margin-top: 8px;">Configure OAuth</a>
-        </div>
-        <div class="hint-list">
-          <p>Use commas, spaces, or new lines between emails.</p>
-          <p>Login with Google before sending.</p>
-          <p>The email is sent from the logged-in Gmail account.</p>
-        </div>
-        <div id="messageBox" class="message-box" hidden></div>
-        <div class="legal-links">
-          <a href="/privacy.html">Privacy Policy</a>
-          <span>&bull;</span>
-          <a href="/terms.html">Terms of Service</a>
-        </div>
-      </aside>
-    </main>
-
+    <!-- Scripts -->
     <script src="/script.js"></script>
   </body>
 </html>
