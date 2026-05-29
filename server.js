@@ -342,21 +342,41 @@ function createMessage({ from, to, subject, content, contentType, signature, att
   const boundary = `----=_Part_${Date.now()}_${crypto.randomBytes(8).toString("hex")}`;
   const messageId = `${Date.now()}.${crypto.randomBytes(8).toString("hex")}@email-send-app`;
 
+  // If content is plain text, wrap it in a clean, full-width professional HTML structure.
   let fullContent = "";
   if (contentType === "plain") {
-    // Send true plain text so the email client renders it like a normal received mail.
-    fullContent = String(content || "");
-    if (signature) {
-      fullContent += `\r\n\r\n-- \r\n${String(signature)}`;
-    }
-  } else {
-    // Keep HTML mode for custom formatting, but avoid adding outer padding or a fixed width.
-    const combined = signature ? `${content}<br><br>${signature}` : content;
+    // Escape and convert double newlines to paragraphs for consistent spacing
+    const paragraphs = String(content || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .split(/\n\s*\n/)
+      .map(p => p.trim())
+      .filter(Boolean)
+      .map(p => `<p style="margin: 0 0 16px 0;">${p.replace(/\n/g, "<br>")}</p>`)
+      .join("");
+
+    const escapedSignature = signature ? String(signature)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/\n/g, "<br>") : "";
+
     fullContent = `
-<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 16px; line-height: 1.6; color: #202124; margin: 0; padding: 0;">
-  ${combined}
+<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 16px; line-height: 1.6; color: #202124; max-width: 100%; margin: 0 auto; padding: 20px;">
+  <div style="margin-bottom: 32px;">
+    ${paragraphs}
+  </div>
+  ${escapedSignature ? `
+  <div style="border-top: 1px solid #e8eaed; padding-top: 24px; margin-top: 24px; color: #5f6368; font-size: 14px;">
+    ${escapedSignature}
+  </div>` : ""}
 </div>
     `.trim();
+    contentType = "html";
+  } else {
+    // If already HTML, just combine with signature if provided
+    fullContent = signature ? `${content}<br><br>${signature}` : content;
   }
 
   const headers = [
